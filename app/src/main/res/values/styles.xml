@@ -1,0 +1,39 @@
+<resources>
+
+    <!--&lt;!&ndash; Base application theme. &ndash;&gt;-->
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+    <!--</style>-->
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+
+        <!-- Customize your theme here. -->
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- enable overlapping of exiting and entering activities-->
+        <item name="android:fragmentAllowEnterTransitionOverlap">@android:transition/explode</item>
+        <item name="android:fragmentAllowReturnTransitionOverlap">@android:transition/explode</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+
+        <!-- specify shared element transitions -->
+        <!--<item name="android:windowSharedElementEnterTransition">@transition/change_text_transform</item>-->
+        <!--<item name="android:windowSharedElementExitTransition">@transition/change_text_transform</item>-->
+    </style>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat">
+        <!--<item name="colorPrimary">@color/primary</item>-->
+        <!--<item name="colorPrimaryDark">@color/primaryDarker</item>-->
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
+</resources>

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/root"
+    tools:context="leavingstone.geolab.shoppinglist.fragments.MainFragment">
+
+    <EditText
+        android:id="@+id/listTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:hint="Title"
+        android:maxLength="20"
+        android:textSize="20sp"
+        android:background="@android:color/transparent"/>
+
+    <!--<com.nhaarman.listviewanimations.itemmanipulation.DynamicListView-->
+    <!--android:id="@android:id/list"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_weight="4" />-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="horizontal">-->
+
+    <!--<Button-->
+    <!--android:id="@+id/addItem"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="+" />-->
+
+    <!--<EditText-->
+    <!--android:id="@+id/newItem"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:hint="New Item" />-->
+
+    <!--</LinearLayout>-->
+
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <LinearLayout
+            android:id="@+id/parent_container"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/unchecked_container"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="2"
+                android:animateLayoutChanges="true">
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/addItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+"
+                    android:background="@android:color/transparent"/>
+
+                <EditText
+                    android:id="@+id/newItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="New Item" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/checked_container"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="2"
+                android:animateLayoutChanges="true">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="20dp">
+                <!--android:layout_marginLeft="10dp"-->
+                <!--android:layout_marginRight="10dp"-->
+
+                <RelativeLayout
+                    android:id="@+id/reminder_pin"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/reminder_pin_img"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/reminder_pin_icon"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"/>
+
+                    <TextView
+                        android:id="@+id/reminder_pin_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@id/reminder_pin_img"
+                        android:textColor="@android:color/holo_red_light"
+                        android:text="15 მარტი 16:00"/>
+
+                    <Button
+                        android:id="@+id/reminder_pin_remove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:textColor="@android:color/holo_red_light"
+                        android:text="x"
+                        android:background="@android:color/transparent"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/location_pin"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/location_pin_img"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/location_pin_icon"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"/>
+
+                    <TextView
+                        android:id="@+id/location_pin_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/location_pin_img"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@android:color/holo_red_light"
+                        android:text="რუსთაველის ქ.N16ა"/>
+
+                    <Button
+                        android:id="@+id/location_pin_remove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:textColor="@android:color/holo_red_light"
+                        android:text="x"
+                        android:background="@android:color/transparent"/>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tags"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/buttons"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/placeButton"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/location_icon"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/timeButton"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/date_reminder_icon" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/friendsButton"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/friends_share_icon"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/shareButton"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/share_icon"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!--<LinearLayout-->
+    <!--android:id="@+id/buttons"-->
+    <!--android:orientation="horizontal"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_weight="1">-->
+
+    <!--<Button-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Place"-->
+    <!--android:id="@+id/placeButton"-->
+    <!--android:layout_gravity="bottom"-->
+    <!--android:layout_weight="1" />-->
+
+    <!--<Button-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Pick Time"-->
+    <!--android:id="@+id/timeButton"-->
+    <!--android:layout_weight="1" />-->
+
+    <!--<Button-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Friends"-->
+    <!--android:id="@+id/friendsButton"-->
+    <!--android:layout_weight="1" />-->
+
+    <!--<Button-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Share"-->
+    <!--android:id="@+id/shareButton"-->
+    <!--android:layout_weight="1" />-->
+    <!--</LinearLayout>-->
+
+</LinearLayout>
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>--><!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--tools:context="leavingstone.geolab.shoppinglist.fragments.MainFragment">-->
+
+    <!--<com.nhaarman.listviewanimations.itemmanipulation.DynamicListView--><!--android:id="@android:id/list"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent" />-->
+
+    <!--<LinearLayout--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:orientation="horizontal"--><!-->-->
+
+    <!--<Button--><!--android:id="@+id/addItem"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:text="+"/>-->
+
+    <!--<EditText--><!--android:id="@+id/newItem"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:hint="New Item"/>-->
+
+    <!--</LinearLayout>-->
+
+    <!--</FrameLayout>-->
+
+
+
+
