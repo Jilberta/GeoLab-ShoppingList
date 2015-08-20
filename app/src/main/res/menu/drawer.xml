@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_item_attachment"
+            android:checked="true"
+            android:title="Notes" />
+        <item
+            android:id="@+id/navigation_item_images"
+            android:title="Reminders" />
+    </group>
+
+    <item android:title="Labels">
+        <menu>
+            <item
+                android:title="Label 1" />
+            <item
+                android:title="Label 2" />
+        </menu>
+    </item>
+
+</menu>

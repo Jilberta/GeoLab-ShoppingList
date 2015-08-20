@@ -105,6 +105,7 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
         }
 
         ActionBar actionbar = ((ActionBarActivity)getActivity()).getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowCustomEnabled(false);
 //        actionbar.setDisplayShowTitleEnabled(false);
    //     actionbar.setDisplayHomeAsUpEnabled(true);

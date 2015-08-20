@@ -2,6 +2,7 @@ package leavingstone.geolab.shoppinglist;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -30,13 +31,10 @@ import leavingstone.geolab.shoppinglist.fragments.ShoppingListFragment;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends ActionBarActivity {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -58,15 +56,27 @@ public class MainActivity extends ActionBarActivity
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+//        ActionBar actionbar = getSupportActionBar();
+//        if(actionbar != null){
+//            actionbar.setDisplayHomeAsUpEnabled(true);
+//        }
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open,
+                R.string.close);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.getMenu().add("Label 25");
+
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, MainFragment.newInstance())
+                .commit();
 
         if (getIntent() != null) {
             if (getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.shopping_list_fragment))) {
@@ -74,7 +84,7 @@ public class MainActivity extends ActionBarActivity
                 Bundle extras = getIntent().getExtras();
                 System.out.println(extras);
                 shoppingListFragment.setArguments(extras);
-                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, shoppingListFragment)
                         .addToBackStack("transaction")
@@ -87,18 +97,14 @@ public class MainActivity extends ActionBarActivity
         return this.toolbar;
     }
 
-    public ActionBarDrawerToggle getDrawerToggle() {
-        return this.mNavigationDrawerFragment.getDrawerToggle();
-    }
-
     public void resetActionBar(boolean childAction, int drawerMode) {
         if (childAction) {
             // [Undocumented?] trick to get up button icon to show
 
-            mNavigationDrawerFragment.getDrawerToggle().setDrawerIndicatorEnabled(false);
+//            mNavigationDrawerFragment.getDrawerToggle().setDrawerIndicatorEnabled(false);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
-            mNavigationDrawerFragment.getDrawerToggle().setDrawerIndicatorEnabled(true);
+//            mNavigationDrawerFragment.getDrawerToggle().setDrawerIndicatorEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
@@ -111,32 +117,15 @@ public class MainActivity extends ActionBarActivity
     }
 
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commit();
-//        switch(position){
-//            case 0:
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.container, MainFragment.newInstance())
-//                        .commit();
-//                break;
-//            case 1:
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.container, ShoppingListFragment.newInstance(), "ShoppingListFragment")
-//                        .commit();
-//                break;
-//            default:
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-//                        .commit();
-//                break;
-//        }
-    }
+//    @Override
+//    public void onNavigationDrawerItemSelected(int position) {
+//        // update the main content by replacing fragments
+//
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.container, MainFragment.newInstance())
+//                .commit();
+//    }
 
     public void onSectionAttached(int number) {
 //        switch (number) {
@@ -162,16 +151,16 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-
-
-            restoreActionBar();
-            return true;
-        }
+//        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+//            // Only show items in the action bar relevant to this screen
+//            // if the drawer is not showing. Otherwise, let the drawer
+//            // decide what to show in the action bar.
+//            getMenuInflater().inflate(R.menu.main, menu);
+//
+//
+//            restoreActionBar();
+//            return true;
+//        }
         return super.onCreateOptionsMenu(menu);
     }
 
