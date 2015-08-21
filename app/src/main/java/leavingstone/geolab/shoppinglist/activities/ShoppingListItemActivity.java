@@ -6,22 +6,23 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,11 +38,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
-import com.nhaarman.listviewanimations.itemmanipulation.dragdrop.TouchViewDraggableManager;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.DismissableManager;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -51,9 +47,13 @@ import java.util.Date;
 import java.util.List;
 
 import leavingstone.geolab.shoppinglist.R;
-import leavingstone.geolab.shoppinglist.adapters.ShoppingListAdapter;
+import leavingstone.geolab.shoppinglist.async.ListItemsUpdater;
+import leavingstone.geolab.shoppinglist.custom_views.CheckBoxView;
 import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
+import leavingstone.geolab.shoppinglist.fragments.ListColorDialog;
+import leavingstone.geolab.shoppinglist.fragments.ShoppingListChangeTypeDialog;
+import leavingstone.geolab.shoppinglist.fragments.TagsFragment;
 import leavingstone.geolab.shoppinglist.locations.GeofenceConstants;
 import leavingstone.geolab.shoppinglist.locations.GeofenceErrorMessages;
 import leavingstone.geolab.shoppinglist.locations.GeofenceTransitionsIntentService;
@@ -67,8 +67,6 @@ import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
-import org.apache.http.conn.ssl.StrictHostnameVerifier;
-
 /**
  * Created by Jay on 3/28/2015.
  */
@@ -78,17 +76,30 @@ public class ShoppingListItemActivity extends ActionBarActivity
         OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private static final int PLACE_PICKER_REQUEST = 1;
+    public static final int DIALOG_FRAGMENT = 2;
+    public static final int COLOR_DIALOG_FRAGMENT = 3;
 
     private static final String DATEPICKER_TAG = "datepicker";
     private static final String TIMEPICKER_TAG = "timepicker";
 
     private ShoppingListModel shoppingList;
+    private ArrayList<ListItemModel> listItems;
+    private LinearLayout uncheckedContainer, checkedContainer, tagsContainer;
+    private EditText titleView;
+    private RelativeLayout locationPin, reminderPin;
+    private Activity mActivity;
+    private Toolbar toolbar;
+    private Calendar alarmDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list_fragment);
 
+        mActivity = this;
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         if(getIntent().getExtras() != null){
             long id = getIntent().getExtras().getLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY);
@@ -96,72 +107,70 @@ public class ShoppingListItemActivity extends ActionBarActivity
             System.out.println(shoppingList);
         }
 
-        final DynamicListView list = (DynamicListView) findViewById(android.R.id.list);
-
-        LinearLayout listFooterView = (LinearLayout) getLayoutInflater().inflate(
-                R.layout.shopping_listitem_listview_footer, null);
-      //  list.addHeaderView(listFooterView, null, true);
-//        list.addFooterView(listFooterView, null, true);
-        list.addFooterView(listFooterView, null, true);
-
-        final ShoppingListAdapter adapter = new ShoppingListAdapter(this);
-        initAdapter(adapter);
-        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
-        animationAdapter.setAbsListView(list);
-        list.setAdapter(animationAdapter);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
 
 
-        list.enableDragAndDrop();
-        list.setDraggableManager(new TouchViewDraggableManager(R.id.list_row_draganddrop_touchview));
-        // list.setOnItemMovedListener(new MyOnItemMovedListener(adapter));
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+
+//        changeFragmentColor(rootView, shoppingList.getColor());
+
+        tagsContainer = (LinearLayout) findViewById(R.id.tags);
+        uncheckedContainer = (LinearLayout) findViewById(R.id.unchecked_container);
+        checkedContainer = (LinearLayout) findViewById(R.id.checked_container);
+
+        locationPin = (RelativeLayout) findViewById(R.id.location_pin);
+        reminderPin = (RelativeLayout) findViewById(R.id.reminder_pin);
+
+        locationPin.findViewById(R.id.location_pin_remove).setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (list != null) {
-//                    int k = parent.getCount();
-                    if(position < (parent.getCount() - list.getFooterViewsCount())) {
-                        list.startDragging(position);
-                    }
-                }
-                return true;
+            public void onClick(View v) {
+                ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText("");
+                locationPin.setVisibility(View.GONE);
+
+                List<String> locationReminderRequestId = new ArrayList<String>();
+                locationReminderRequestId.add("" + shoppingList.getId());
+
+                LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, locationReminderRequestId);
+                shoppingList.setLocationReminder(null);
+                shoppingList.setLocationReminderJson(null);
+                DBManager.updateShoppingList(shoppingList);
             }
         });
 
-        list.enableSwipeToDismiss(new OnDismissCallback() {
+        reminderPin.findViewById(R.id.reminder_pin_remove).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDismiss(@NonNull ViewGroup viewGroup, @NonNull int[] ints) {
-                for (int position : ints) {
-//                    if (position < adapter.getCount())
-                        DBManager.deleteItem(DBHelper.SHOPPING_LIST_ITEM_TABLE, DBHelper.SHOPPING_LIST_ITEM_ID, adapter.getItem(position).getId());
-                        adapter.remove(position);
-                }
+            public void onClick(View v) {
+                ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText("");
+                reminderPin.setVisibility(View.GONE);
+
+                Intent intentAlarm = new Intent(mActivity, AlarmReceiver.class);
+//                intentAlarm.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList.getId());
+                AlarmManager alarmManager = (AlarmManager) mActivity.getSystemService(Context.ALARM_SERVICE);
+                alarmManager.cancel(PendingIntent.getBroadcast(mActivity, (int) shoppingList.getId(), intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+
+                shoppingList.setAlarmDate(null);
+                DBManager.updateShoppingList(shoppingList);
             }
         });
 
-        list.setDismissableManager(
-                new DismissableManager() {
-                    @Override
-                    public boolean isDismissable(final long id, final int position) {
-                        if (position == adapter.getCount()) {
-                    /* Don't allow swiping the footer view. */
-                            return false;
-                        }
-                        return true;
-                    }
-                }
-        );
+        titleView = (EditText) findViewById(R.id.listTitle);
 
+
+        loadShoppingList();
 
         final EditText newItemValue = (EditText) findViewById(R.id.newItem);
         Button addNewItem = (Button) findViewById(R.id.addItem);
         addNewItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ListItemModel newItem = new ListItemModel(shoppingList.getId(), String.valueOf(newItemValue.getText()), shoppingList.getType());
+                ListItemModel newItem = new ListItemModel(shoppingList.getId(), String.valueOf(newItemValue.getText()), ListItemModel.ListItemState.UnChecked.ordinal());
                 long id = DBManager.insertListItem(newItem);
                 newItem.setId(id);
-                adapter.add(newItem);
-                list.setSelection(adapter.getCount() - 1);
+
+                listItems.add(newItem);
+                CheckBoxView item = new CheckBoxView(mActivity, newItem, shoppingList.getType(), checkedContainer, uncheckedContainer);
+                uncheckedContainer.addView(item);
             }
         });
 
@@ -169,16 +178,13 @@ public class ShoppingListItemActivity extends ActionBarActivity
         placeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
                 try {
-                    startActivityForResult(builder.build(getApplicationContext()), PLACE_PICKER_REQUEST);
+                    startActivityForResult(builder.build(mActivity), PLACE_PICKER_REQUEST);
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
-
                 }
             }
         });
@@ -194,8 +200,8 @@ public class ShoppingListItemActivity extends ActionBarActivity
         // Initially set the PendingIntent used in addGeofences() and removeGeofences() to null.
         mGeofencePendingIntent = null;
         // Retrieve an instance of the SharedPreferences object.
-        mSharedPreferences = getSharedPreferences(GeofenceConstants.SHARED_PREFERENCES_NAME,
-                MODE_PRIVATE);
+        mSharedPreferences = mActivity.getSharedPreferences(GeofenceConstants.SHARED_PREFERENCES_NAME,
+                mActivity.MODE_PRIVATE);
         addGeofence = false;
 
         updateValuesFromBundle(savedInstanceState);
@@ -206,7 +212,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
         final Calendar calendar = Calendar.getInstance();
 
         final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false);
-        final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY) ,calendar.get(Calendar.MINUTE), false, false);
+        final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, false);
 
 
         Button timePicker = (Button) findViewById(R.id.timeButton);
@@ -229,16 +235,152 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
             }
         });
+
+        Button shareButton = (Button) findViewById(R.id.shareButton);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveUpdatedData();
+            }
+        });
     }
 
-    private void initAdapter(ShoppingListAdapter adapter){
-        ArrayList<ListItemModel> listItems = DBManager.getShoppingListItems(DBHelper.SHOPPING_LIST_ITEM_PARENT_ID + " = " + shoppingList.getId());
-        for(int i = 0; i < listItems.size(); i++){
-            adapter.add(i, listItems.get(i));
+    private void loadShoppingList(){
+        if(shoppingList.getTitle() != null)
+            titleView.setText(shoppingList.getTitle());
+
+        if(shoppingList.getAlarmDate() != null){
+            ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText(shoppingList.getAlarmDate());
+            reminderPin.setVisibility(View.VISIBLE);
+        }
+
+        if(shoppingList.getLocationReminder() != null){
+            ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText(shoppingList.getLocationReminder().getAddress());
+            locationPin.setVisibility(View.VISIBLE);
+        }
+
+        if(shoppingList.getTags() != null && !shoppingList.getTags().isEmpty()){
+            for(int i = 0; i < shoppingList.getTags().size(); i++){
+                TextView tag = new TextView(mActivity);
+                tag.setBackground(getResources().getDrawable(R.drawable.tag_background_white));
+
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                lp.setMargins(5, 0, 5, 0);
+                tag.setLayoutParams(lp);
+
+                tag.setText(shoppingList.getTags().get(i));
+
+                tagsContainer.addView(tag);
+            }
+        }
+
+        loadListItems(checkedContainer, uncheckedContainer);
+    }
+
+    private void loadListItems(LinearLayout checked, LinearLayout unchecked) {
+        if (shoppingList == null)
+            return;
+        listItems = DBManager.getShoppingListItems(DBHelper.SHOPPING_LIST_ITEM_PARENT_ID + " = " + shoppingList.getId());
+        for (int i = 0; i < listItems.size(); i++) {
+            if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+                CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
+                checked.addView(item);
+            } else {
+                CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
+                unchecked.addView(item);
+            }
         }
     }
 
-    private Calendar alarmDate;
+    private void saveUpdatedData() {
+        if(titleView != null && shoppingList != null){
+            String title = String.valueOf(titleView.getText());
+            shoppingList.setTitle(title);
+        }
+        new ListItemsUpdater(mActivity).execute(shoppingList, listItems);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.shopping_list_fragment_menu, menu);
+        if (shoppingList.getType() == ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal()) {
+            menu.findItem(R.id.showCheckBoxes).setVisible(true);
+            menu.findItem(R.id.hideCheckBoxes).setVisible(false);
+        } else {
+            menu.findItem(R.id.showCheckBoxes).setVisible(false);
+            menu.findItem(R.id.hideCheckBoxes).setVisible(true);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                NavUtils.navigateUpFromSameTask(getActivity());
+//                return true;
+            case R.id.listColor:
+                ListColorDialog colorDialog = new ListColorDialog();
+                Bundle bundle = new Bundle();
+                bundle.putInt("Color", shoppingList.getColor());
+                colorDialog.setArguments(bundle);
+//                colorDialog.setTargetFragment(this, COLOR_DIALOG_FRAGMENT);
+                colorDialog.show(getSupportFragmentManager(), "ShoppingListColorDialog");
+                return true;
+            case R.id.deleteList:
+                DBManager.deleteItem(DBHelper.SHOPPING_LIST_ITEM_TABLE, DBHelper.SHOPPING_LIST_ITEM_PARENT_ID, shoppingList.getId());
+                DBManager.deleteItem(DBHelper.SHOPPING_LIST_TABLE, DBHelper.SHOPPING_LIST_ID, shoppingList.getId());
+
+//                shoppingList.setIsDeleted(true);
+
+                shoppingList = null;
+                listItems = null;
+
+//                MainFragment mainFragment = MainFragment.newInstance();
+//                getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//                FragmentTransaction ft = getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, mainFragment);
+//                ft.commit();
+                Toast.makeText(mActivity, "????????", Toast.LENGTH_LONG).show();
+
+                return true;
+            case R.id.showCheckBoxes:
+                shoppingList.setType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
+                changeShoppingListType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
+                return true;
+            case R.id.hideCheckBoxes:
+                shoppingList.setType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+                if (checkedContainer.getChildCount() != 0) {
+                    ShoppingListChangeTypeDialog dialog = new ShoppingListChangeTypeDialog();
+                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
+                    dialog.show(getSupportFragmentManager(), "ShoppingListChangeTypeDialog");
+                } else
+                    changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+                return true;
+            case R.id.addTags:
+                TagsFragment tagsFragment = TagsFragment.newInstance();
+                Bundle extras = new Bundle();
+                extras.putSerializable(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList);
+                tagsFragment.setArguments(extras);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, tagsFragment)
+                        .addToBackStack("labels");
+                transaction.commit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void changeShoppingListType(int type) {
+        shoppingList.setType(type);
+        for (int i = 0; i < uncheckedContainer.getChildCount(); i++) {
+            ((CheckBoxView) uncheckedContainer.getChildAt(i)).setListType(shoppingList.getType());
+        }
+        mActivity.invalidateOptionsMenu();
+    }
+
 
     @Override
     public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
@@ -246,10 +388,11 @@ public class ShoppingListItemActivity extends ActionBarActivity
         alarmDate.set(Calendar.YEAR, year);
         alarmDate.set(Calendar.MONTH, month);
         alarmDate.set(Calendar.DAY_OF_MONTH, day);
-        Toast.makeText(this, "new date:" + year + "-" + month + "-" + day + " : " + alarmDate.get(Calendar.YEAR) + "-" + alarmDate.get(Calendar.MONTH) + "-" + alarmDate.get(Calendar.DAY_OF_MONTH), Toast.LENGTH_LONG).show();
+        Toast.makeText(mActivity, "new date:" + year + "-" + month + "-" + day + " : " + alarmDate.get(Calendar.YEAR) + "-" + alarmDate.get(Calendar.MONTH) + "-" + alarmDate.get(Calendar.DAY_OF_MONTH), Toast.LENGTH_LONG).show();
+
 
         Calendar calendar = Calendar.getInstance();
-        TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY) ,calendar.get(Calendar.MINUTE), false, false);
+        TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, false);
         timePickerDialog.setVibrate(false);
         timePickerDialog.setCloseOnSingleTapMinute(false);
         timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
@@ -259,28 +402,37 @@ public class ShoppingListItemActivity extends ActionBarActivity
     public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
         alarmDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
         alarmDate.set(Calendar.MINUTE, minute);
-        Toast.makeText(this, "new time:" + hourOfDay + "-" + minute + " : " + alarmDate.get(Calendar.HOUR_OF_DAY) + "-" + alarmDate.get(Calendar.MINUTE), Toast.LENGTH_LONG).show();
+        //   Toast.makeText(getActivity(), "new time:" + hourOfDay + "-" + minute + " : " + alarmDate.get(Calendar.HOUR_OF_DAY) + "-" + alarmDate.get(Calendar.MINUTE), Toast.LENGTH_LONG).show();
 
-        shoppingList.setAlarmDate(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(alarmDate.getTime()));
+//        Toast.makeText(getActivity(), alarmDate.get(Calendar.DAY_OF_MONTH) + " " + alarmDate.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + alarmDate.get(Calendar.HOUR) + ":" + alarmDate.get(Calendar.MINUTE), Toast.LENGTH_LONG).show();
+
+        String reminderPinText = new SimpleDateFormat("dd MMMM HH:mm").format(alarmDate.getTime());
+        Toast.makeText(mActivity, reminderPinText, Toast.LENGTH_LONG).show();
+
+        reminderPin.setVisibility(View.VISIBLE);
+        ((TextView)reminderPin.findViewById(R.id.reminder_pin_text)).setText(reminderPinText);
+
+        shoppingList.setAlarmDate(reminderPinText);
         DBManager.updateShoppingList(shoppingList);
 
-        Intent intentAlarm = new Intent(this, AlarmReceiver.class);
-        intentAlarm.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList);
-        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmDate.getTimeInMillis(), PendingIntent.getBroadcast(this, (int) shoppingList.getId(), intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+        Intent intentAlarm = new Intent(mActivity, AlarmReceiver.class);
+        intentAlarm.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList.getId());
+        AlarmManager alarmManager = (AlarmManager) mActivity.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmDate.getTimeInMillis(), PendingIntent.getBroadcast(mActivity, (int) shoppingList.getId(), intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_PICKER_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
-                String toastMsg = String.format("Place: %s", place.getName() + " Adress: " + place.getAddress() + " Lat: " + place.getLatLng().latitude + " Long: " + place.getLatLng().longitude);
-                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+        switch (requestCode) {
+            case PLACE_PICKER_REQUEST:
+                if (resultCode == Activity.RESULT_OK) {
+                    Place place = PlacePicker.getPlace(data, mActivity);
+                    String toastMsg = String.format("Place: %s", place.getName() + " Adress: " + place.getAddress() + " Lat: " + place.getLatLng().latitude + " Long: " + place.getLatLng().longitude);
+                    Toast.makeText(mActivity, toastMsg, Toast.LENGTH_LONG).show();
 
-                mCurrentLocation = new Location("");
-                mCurrentLocation.setLongitude(place.getLatLng().longitude);
-                mCurrentLocation.setLatitude(place.getLatLng().latitude);
+                    mCurrentLocation = new Location("");
+                    mCurrentLocation.setLongitude(place.getLatLng().longitude);
+                    mCurrentLocation.setLatitude(place.getLatLng().latitude);
 
 
 //                mGeofenceList.add(new Geofence.Builder()
@@ -294,29 +446,64 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
 //                        .build());
 
-                mGeofenceList.add(new Geofence.Builder()
-                        .setRequestId("GeofenceLocation")
-                        .setCircularRegion(
-                                mCurrentLocation.getLatitude(),
-                                mCurrentLocation.getLongitude(),
-                                GeofenceConstants.GEOFENCE_RADIUS_IN_METERS
-                        )
-                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                        .build());
+                    mGeofenceList.add(new Geofence.Builder()
+                            .setRequestId("" + shoppingList.getId())
+                            .setCircularRegion(
+                                    mCurrentLocation.getLatitude(),
+                                    mCurrentLocation.getLongitude(),
+                                    GeofenceConstants.GEOFENCE_RADIUS_IN_METERS
+                            )
+                            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                            .build());
 
-               // addGeofencesButtonHandler();
-                addGeofence = true;
+                    // addGeofencesButtonHandler();
+                    addGeofence = true;
 
-                LocationModel locationModel = new LocationModel(place.getLatLng().longitude, place.getLatLng().latitude, String.valueOf(place.getName()));
-                shoppingList.setLocationReminder(locationModel);
-                DBManager.updateShoppingList(shoppingList);
+                    LocationModel locationModel = new LocationModel(place.getLatLng().longitude, place.getLatLng().latitude, String.valueOf(place.getName()));
+                    shoppingList.setLocationReminder(locationModel);
+                    DBManager.updateShoppingList(shoppingList);
 
-             //   startUpdatesButtonHandler();
-            }
+                    ((TextView)locationPin.findViewById(R.id.location_pin_text)).setText(locationModel.getAddress());
+                    locationPin.setVisibility(View.VISIBLE);
+
+                    //   startUpdatesButtonHandler();
+                }
+                break;
+            case DIALOG_FRAGMENT:
+                if (resultCode == Activity.RESULT_OK) {
+                    for (int i = 0; i < listItems.size(); i++) {
+                        if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+                            listItems.get(i).setIsDeleted(true);
+                        }
+                    }
+                    checkedContainer.removeAllViews();
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    for (int i = 0; i < listItems.size(); i++) {
+                        if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+                            listItems.get(i).setIsChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+                        }
+                    }
+                    for(int i = 0; i < checkedContainer.getChildCount(); i++){
+                        CheckBoxView checkedItem = (CheckBoxView) checkedContainer.getChildAt(i);
+                        checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+                    }
+                }
+                changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+                break;
+            case COLOR_DIALOG_FRAGMENT:
+                if(resultCode == Activity.RESULT_OK){
+                    int color = data.getIntExtra("ClickedColor", 0);
+                    shoppingList.setColor(color);
+//                    getView().setBackgroundColor(color);
+//                    getView().setBackground(new ColorDrawable(color));
+                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+                }
+                break;
+            default:
+                break;
         }
     }
-
 
     /**
      * Provides the entry point to Google Play services.
@@ -403,7 +590,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -485,13 +672,13 @@ public class ShoppingListItemActivity extends ActionBarActivity
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
             startLocationUpdates();
@@ -499,15 +686,16 @@ public class ShoppingListItemActivity extends ActionBarActivity
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
+        saveUpdatedData();
         if (mGoogleApiClient.isConnected()) {
             stopLocationUpdates();
         }
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
     }
@@ -515,7 +703,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
     @Override
     public void onConnected(Bundle bundle) {
 
-        Toast.makeText(this, "GoogleApiClient Connected", Toast.LENGTH_LONG).show();
+        Toast.makeText(mActivity, "GoogleApiClient Connected", Toast.LENGTH_LONG).show();
 
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -527,7 +715,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
             startLocationUpdates();
         }
 
-        if(addGeofence){
+        if (addGeofence) {
             addGeofencesButtonHandler();
         }
     }
@@ -543,7 +731,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         updateUI();
-        Toast.makeText(this, getResources().getString(R.string.location_updated_message) + " Lat: " + mCurrentLocation.getLatitude() + " Long: " + mCurrentLocation.getLongitude(),
+        Toast.makeText(mActivity, getResources().getString(R.string.location_updated_message) + " Lat: " + mCurrentLocation.getLatitude() + " Long: " + mCurrentLocation.getLongitude(),
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -611,7 +799,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
      */
     public void addGeofencesButtonHandler() {
         if (!mGoogleApiClient.isConnected()) {
-            Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -637,7 +825,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
      */
     public void removeGeofencesButtonHandler() {
         if (!mGoogleApiClient.isConnected()) {
-            Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
         }
         try {
@@ -683,14 +871,14 @@ public class ShoppingListItemActivity extends ActionBarActivity
             // setButtonsEnabledState();
 
             Toast.makeText(
-                    this,
+                    mActivity,
                     getString(mGeofencesAdded ? R.string.geofences_added :
                             R.string.geofences_removed),
                     Toast.LENGTH_SHORT
             ).show();
         } else {
             // Get the status code for the error and log it using a user-friendly message.
-            String errorMessage = GeofenceErrorMessages.getErrorString(this,
+            String errorMessage = GeofenceErrorMessages.getErrorString(mActivity,
                     status.getStatusCode());
             Log.e(TAG, errorMessage);
         }
@@ -708,12 +896,12 @@ public class ShoppingListItemActivity extends ActionBarActivity
         if (mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
-        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        Intent intent = new Intent(mActivity, GeofenceTransitionsIntentService.class);
 //        intent.putExtra("leavingstone.geolab.shoppinglist.model", shoppingList);
         intent.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList.getId());
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // addGeofences() and removeGeofences().
-        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(mActivity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
 //    /**
@@ -748,4 +936,9 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //                    .build());
 //        }
 //    }
+
+    private void changeFragmentColor(View root, int color){
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+        root.setBackgroundColor(color);
+    }
 }

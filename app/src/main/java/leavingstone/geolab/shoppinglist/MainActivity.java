@@ -4,30 +4,26 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
 
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
+import leavingstone.geolab.shoppinglist.activities.ShoppingListItemActivity;
+import leavingstone.geolab.shoppinglist.adapters.MainFragmentListAdapter;
 import leavingstone.geolab.shoppinglist.database.DBManager;
-import leavingstone.geolab.shoppinglist.fragments.MainFragment;
-import leavingstone.geolab.shoppinglist.fragments.ShoppingListFragment;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 
 
@@ -36,17 +32,15 @@ public class MainActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
-
     private Toolbar toolbar;
+    private Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mActivity = this;
 
         try {
             DBManager.init(this);
@@ -61,8 +55,6 @@ public class MainActivity extends ActionBarActivity {
 //            actionbar.setDisplayHomeAsUpEnabled(true);
 //        }
 
-        mTitle = getTitle();
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open,
                 R.string.close);
@@ -73,79 +65,85 @@ public class MainActivity extends ActionBarActivity {
         navigationView.getMenu().add("Label 25");
 
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commit();
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.container, MainFragment.newInstance())
+//                .commit();
+//
+//        if (getIntent() != null) {
+//            if (getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.shopping_list_fragment))) {
+//                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
+//                Bundle extras = getIntent().getExtras();
+//                System.out.println(extras);
+//                shoppingListFragment.setArguments(extras);
+//                fragmentManager = getSupportFragmentManager();
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.container, shoppingListFragment)
+//                        .addToBackStack("transaction")
+//                        .commit();
+//            }
+//        }
 
-        if (getIntent() != null) {
-            if (getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.shopping_list_fragment))) {
-                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
-                Bundle extras = getIntent().getExtras();
-                System.out.println(extras);
-                shoppingListFragment.setArguments(extras);
-                fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, shoppingListFragment)
-                        .addToBackStack("transaction")
-                        .commit();
+
+
+        ListView list = (ListView) findViewById(android.R.id.list);
+        MainFragmentListAdapter adapter = new MainFragmentListAdapter(this, DBManager.getShoppingList(null));
+        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
+        animationAdapter.setAbsListView(list);
+        list.setAdapter(animationAdapter);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
+//                Bundle extras = new Bundle();
+//                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, ((ShoppingListModel) parent.getAdapter().getItem(position)).getId());
+//                shoppingListFragment.setArguments(extras);
+//                FragmentTransaction ft = getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, shoppingListFragment)
+//                        .addToBackStack("transaction");
+//                ft.commit();
+
+                Intent shoppingList = new Intent(mActivity, ShoppingListItemActivity.class);
+                Bundle extras = new Bundle();
+                ShoppingListModel mda = ((ShoppingListModel) parent.getAdapter().getItem(position));
+                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, ((ShoppingListModel) parent.getAdapter().getItem(position)).getId());
+                shoppingList.putExtras(extras);
+                startActivity(shoppingList);
             }
-        }
-    }
+        });
 
-    public Toolbar getActionBarToolbar() {
-        return this.toolbar;
-    }
+        Button newList = (Button)findViewById(R.id.newList);
+        newList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String date = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime());
+                ShoppingListModel shoppingListModel = new ShoppingListModel(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal(), date);
+                long id = DBManager.insertShoppingList(shoppingListModel);
+                shoppingListModel.setId(id);
 
-    public void resetActionBar(boolean childAction, int drawerMode) {
-        if (childAction) {
-            // [Undocumented?] trick to get up button icon to show
+//                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
+//                Bundle extras = new Bundle();
+//                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingListModel.getId());
+//                shoppingListFragment.setArguments(extras);
+//                FragmentTransaction ft = getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, shoppingListFragment)
+//                        .addToBackStack("transaction");
+//                ft.commit();
 
-//            mNavigationDrawerFragment.getDrawerToggle().setDrawerIndicatorEnabled(false);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        } else {
-//            mNavigationDrawerFragment.getDrawerToggle().setDrawerIndicatorEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
 
-        // drawerLayout.setDrawerLockMode(drawerMode);
+                Intent shoppingList = new Intent(mActivity, ShoppingListItemActivity.class);
+                Bundle extras = new Bundle();
+                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingListModel.getId());
+                shoppingList.putExtras(extras);
+                startActivity(shoppingList);
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-//    @Override
-//    public void onNavigationDrawerItemSelected(int position) {
-//        // update the main content by replacing fragments
-//
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.container, MainFragment.newInstance())
-//                .commit();
-//    }
-
-    public void onSectionAttached(int number) {
-//        switch (number) {
-//            case 1:
-//                mTitle = getString(R.string.title_section1);
-//                break;
-//            case 2:
-//                mTitle = getString(R.string.title_section2);
-//                break;
-//            case 3:
-//                mTitle = getString(R.string.title_section3);
-//                break;
-//        }
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
     }
 
 
@@ -178,45 +176,4 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
-
 }

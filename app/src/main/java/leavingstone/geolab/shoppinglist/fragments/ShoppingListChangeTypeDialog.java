@@ -27,7 +27,7 @@ public class ShoppingListChangeTypeDialog extends DialogFragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, getActivity().getIntent());
+                onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, getActivity().getIntent());
                 dismiss();
             }
         });
@@ -35,7 +35,7 @@ public class ShoppingListChangeTypeDialog extends DialogFragment {
         keep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, getActivity().getIntent());
+                onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, getActivity().getIntent());
                 dismiss();
             }
         });

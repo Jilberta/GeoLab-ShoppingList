@@ -8,6 +8,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+        <item name="android:colorPrimary">@color/toolbar_color</item>
+        <item name="android:windowBackground">@color/background_color</item>
 
         <!-- Customize your theme here. -->
         <item name="android:windowContentTransitions">true</item>
@@ -26,6 +28,8 @@
     <style name="AppTheme.Base" parent="Theme.AppCompat">
         <!--<item name="colorPrimary">@color/primary</item>-->
         <!--<item name="colorPrimaryDark">@color/primaryDarker</item>-->
+        <item name="android:colorPrimary">@color/toolbar_color</item>
+        <item name="android:windowBackground">@color/background_color</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>

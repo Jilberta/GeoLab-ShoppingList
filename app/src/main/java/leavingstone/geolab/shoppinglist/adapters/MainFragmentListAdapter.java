@@ -49,9 +49,13 @@ public class MainFragmentListAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View itemView = View.inflate(context, R.layout.fragment_main, null);
+//        View itemView = View.inflate(context, R.layout.fragment_main, null);
+        View itemView = View.inflate(context, R.layout.shopping_listitem_layout_new, null);
         TextView textView = (TextView) itemView.findViewById(R.id.section_label);
-        textView.setText(String.valueOf(getItem(position)));
+        if(position == 0)
+            textView.setText("Avoeeee");
+        else
+            textView.setText(String.valueOf(getItem(position)));
 
         return itemView;
     }

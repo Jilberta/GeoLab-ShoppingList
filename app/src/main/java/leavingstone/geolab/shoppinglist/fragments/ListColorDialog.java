@@ -50,7 +50,7 @@ public class ListColorDialog extends DialogFragment {
                 public void onClick(View v) {
                     Intent intent = new Intent();
                     intent.putExtra("ClickedColor", ((ColorView)v).getColor());
-                    getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+                    onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
                     dismiss();
                 }
             });

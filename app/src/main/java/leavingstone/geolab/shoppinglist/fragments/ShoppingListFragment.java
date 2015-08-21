@@ -243,63 +243,6 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
 
 
         loadShoppingList();
-//        loadListItems(checkedContainer, uncheckedContainer);
-
-      /*  final DynamicListView list = (DynamicListView) rootView.findViewById(android.R.id.list);
-
-        LinearLayout listFooterView = (LinearLayout) inflater.inflate(
-                R.layout.shopping_listitem_listview_footer, null);
-        //  list.addHeaderView(listFooterView, null, true);
-//        list.addFooterView(listFooterView, null, true);
-        list.addFooterView(listFooterView, null, true);
-
-        final ShoppingListAdapter adapter = new ShoppingListAdapter(getActivity());
-        loadListItems(adapter);
-        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
-        animationAdapter.setAbsListView(list);
-        list.setAdapter(animationAdapter);
-
-
-        list.enableDragAndDrop();
-        list.setDraggableManager(new TouchViewDraggableManager(R.id.gripView));*/
-
-        // list.setOnItemMovedListener(new MyOnItemMovedListener(adapter));
-//        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (list != null) {
-////                    int k = parent.getCount();
-//                    if(position < (parent.getCount() - list.getFooterViewsCount())) {
-//                        list.startDragging(position);
-//                    }
-//                }
-//                return true;
-//            }
-//        });
-
-     /*   list.enableSwipeToDismiss(new OnDismissCallback() {
-            @Override
-            public void onDismiss(@NonNull ViewGroup viewGroup, @NonNull int[] ints) {
-                for (int position : ints) {
-//                    if (position < adapter.getCount())
-                    DBManager.deleteItem(DBHelper.SHOPPING_LIST_ITEM_TABLE, DBHelper.SHOPPING_LIST_ITEM_ID, adapter.getItem(position).getId());
-                    adapter.remove(position);
-                }
-            }
-        });
-
-        list.setDismissableManager(
-                new DismissableManager() {
-                    @Override
-                    public boolean isDismissable(final long id, final int position) {
-                        if (position == adapter.getCount()) {
-                    *//* Don't allow swiping the footer view. *//*
-                            return false;
-                        }
-                        return true;
-                    }
-                }
-        );*/
 
         final EditText newItemValue = (EditText) rootView.findViewById(R.id.newItem);
         Button addNewItem = (Button) rootView.findViewById(R.id.addItem);
@@ -312,11 +255,7 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
 
                 listItems.add(newItem);
                 CheckBoxView item = new CheckBoxView(getActivity(), newItem, shoppingList.getType(), checkedContainer, uncheckedContainer);
-//                item.setValue(newItem);
                 uncheckedContainer.addView(item);
-
-//                adapter.add(newItem);
-//                list.setSelection(adapter.getCount() - 1);
             }
         });
 
@@ -324,16 +263,13 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
         placeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
                 try {
                     startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
-
                 }
             }
         });
