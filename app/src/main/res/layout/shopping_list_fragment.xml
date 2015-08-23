@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="20dp"
     android:orientation="vertical"
-    android:id="@+id/root"
     tools:context="leavingstone.geolab.shoppinglist.fragments.MainFragment">
 
     <!-- The ActionBar -->
@@ -17,38 +19,84 @@
         android:id="@+id/listTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
+        android:background="@android:color/transparent"
         android:hint="Title"
         android:maxLength="20"
-        android:textSize="20sp"
-        android:background="@android:color/transparent"/>
+        android:textSize="20sp" />
 
-    <!--<com.nhaarman.listviewanimations.itemmanipulation.DynamicListView-->
-    <!--android:id="@android:id/list"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:layout_weight="4" />-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <!--<LinearLayout-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:orientation="horizontal">-->
+        <TextView
+            android:id="@+id/reminder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_weight="2"
+            android:text="After tomorrow"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/reminder_text_size" />
 
-    <!--<Button-->
-    <!--android:id="@+id/addItem"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="+" />-->
+        <LinearLayout
+            android:id="@+id/progress_conatainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginBottom="@dimen/title_container_margin"
+            android:layout_marginTop="@dimen/title_container_margin"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-    <!--<EditText-->
-    <!--android:id="@+id/newItem"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:hint="New Item" />-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:orientation="vertical">
 
-    <!--</LinearLayout>-->
+                <TextView
+                    android:id="@+id/progress_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="@dimen/progress_bar_margin"
+                    android:gravity="start"
+                    android:text="Progress"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/progress_label_text_size" />
 
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/progress_bar_margin"
+                    android:layout_marginStart="@dimen/progress_bar_margin"
+                    android:max="10"
+                    android:progress="4" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/progress_percentage_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginEnd="@dimen/progress_bar_margin"
+                android:layout_marginStart="@dimen/progress_bar_margin"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:text="0%"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -56,59 +104,78 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
 
+
         <LinearLayout
             android:id="@+id/parent_container"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/unchecked_container"
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
                 android:orientation="vertical"
-                android:layout_weight="2"
-                android:animateLayoutChanges="true">
+                card_view:cardBackgroundColor="@android:color/holo_blue_light"
+                card_view:cardElevation="10dp">
 
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/addItem"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="+"
-                    android:background="@android:color/transparent"/>
+                    android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/newItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="New Item" />
+                    <LinearLayout
+                        android:id="@+id/unchecked_container"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
 
-            </LinearLayout>
+                    </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/checked_container"
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:orientation="vertical"
-                android:layout_weight="2"
-                android:animateLayoutChanges="true">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-            </LinearLayout>
+                        <Button
+                            android:id="@+id/addItem"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:text="+" />
+
+                        <EditText
+                            android:id="@+id/newItem"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:hint="New Item" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/checked_container"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginBottom="20dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginBottom="20dp">
+                android:orientation="vertical">
                 <!--android:layout_marginLeft="10dp"-->
                 <!--android:layout_marginRight="10dp"-->
 
@@ -123,9 +190,9 @@
                         android:id="@+id/reminder_pin_img"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/reminder_pin_icon"
                         android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/reminder_pin_icon" />
 
                     <TextView
                         android:id="@+id/reminder_pin_text"
@@ -134,8 +201,8 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="10dp"
                         android:layout_toRightOf="@id/reminder_pin_img"
-                        android:textColor="@android:color/holo_red_light"
-                        android:text="15 მარტი 16:00"/>
+                        android:text="15 მარტი 16:00"
+                        android:textColor="@android:color/holo_red_light" />
 
                     <Button
                         android:id="@+id/reminder_pin_remove"
@@ -143,9 +210,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:textColor="@android:color/holo_red_light"
+                        android:background="@android:color/transparent"
                         android:text="x"
-                        android:background="@android:color/transparent"/>
+                        android:textColor="@android:color/holo_red_light" />
 
                 </RelativeLayout>
 
@@ -160,19 +227,19 @@
                         android:id="@+id/location_pin_img"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/location_pin_icon"
                         android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/location_pin_icon" />
 
                     <TextView
                         android:id="@+id/location_pin_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@id/location_pin_img"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="10dp"
-                        android:textColor="@android:color/holo_red_light"
-                        android:text="რუსთაველის ქ.N16ა"/>
+                        android:layout_toRightOf="@id/location_pin_img"
+                        android:text="რუსთაველის ქ.N16ა"
+                        android:textColor="@android:color/holo_red_light" />
 
                     <Button
                         android:id="@+id/location_pin_remove"
@@ -180,9 +247,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:textColor="@android:color/holo_red_light"
+                        android:background="@android:color/transparent"
                         android:text="x"
-                        android:background="@android:color/transparent"/>
+                        android:textColor="@android:color/holo_red_light" />
 
                 </RelativeLayout>
 
@@ -193,111 +260,59 @@
                 android:id="@+id/tags"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp">
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/buttons"
-                android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/placeButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/placeButton"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/location_icon"/>
+                    android:background="@drawable/location_icon" />
 
                 <Button
+                    android:id="@+id/timeButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/timeButton"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/date_reminder_icon" />
 
                 <Button
+                    android:id="@+id/friendsButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/friendsButton"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/friends_share_icon"/>
+                    android:background="@drawable/friends_share_icon" />
 
                 <Button
+                    android:id="@+id/shareButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/shareButton"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/share_icon"/>
+                    android:background="@drawable/share_icon" />
 
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
-    <!--<LinearLayout-->
-    <!--android:id="@+id/buttons"-->
-    <!--android:orientation="horizontal"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:layout_weight="1">-->
-
-    <!--<Button-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Place"-->
-    <!--android:id="@+id/placeButton"-->
-    <!--android:layout_gravity="bottom"-->
-    <!--android:layout_weight="1" />-->
-
-    <!--<Button-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Pick Time"-->
-    <!--android:id="@+id/timeButton"-->
-    <!--android:layout_weight="1" />-->
-
-    <!--<Button-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Friends"-->
-    <!--android:id="@+id/friendsButton"-->
-    <!--android:layout_weight="1" />-->
-
-    <!--<Button-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Share"-->
-    <!--android:id="@+id/shareButton"-->
-    <!--android:layout_weight="1" />-->
-    <!--</LinearLayout>-->
-
 </LinearLayout>
-
-
-    <!--<?xml version="1.0" encoding="utf-8"?>--><!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--tools:context="leavingstone.geolab.shoppinglist.fragments.MainFragment">-->
-
-    <!--<com.nhaarman.listviewanimations.itemmanipulation.DynamicListView--><!--android:id="@android:id/list"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent" />-->
-
-    <!--<LinearLayout--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:orientation="horizontal"--><!-->-->
-
-    <!--<Button--><!--android:id="@+id/addItem"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:text="+"/>-->
-
-    <!--<EditText--><!--android:id="@+id/newItem"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:hint="New Item"/>-->
-
-    <!--</LinearLayout>-->
-
-    <!--</FrameLayout>-->
 
 
 

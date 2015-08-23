@@ -151,12 +151,12 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
                 shoppingList = null;
                 listItems = null;
 
-                MainFragment mainFragment = MainFragment.newInstance();
-                getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                FragmentTransaction ft = getFragmentManager().beginTransaction()
-                        .replace(R.id.container, mainFragment);
-                ft.commit();
-                Toast.makeText(getActivity(), "????????", Toast.LENGTH_LONG).show();
+//                MainFragment mainFragment = MainFragment.newInstance();
+//                getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//                FragmentTransaction ft = getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, mainFragment);
+//                ft.commit();
+//                Toast.makeText(getActivity(), "????????", Toast.LENGTH_LONG).show();
 
                 return true;
             case R.id.showCheckBoxes:
@@ -173,14 +173,14 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
                     changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
                 return true;
             case R.id.addTags:
-                TagsFragment tagsFragment = TagsFragment.newInstance();
-                Bundle extras = new Bundle();
-                extras.putSerializable(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList);
-                tagsFragment.setArguments(extras);
-                FragmentTransaction transaction = getFragmentManager().beginTransaction()
-                        .replace(R.id.container, tagsFragment)
-                        .addToBackStack("labels");
-                transaction.commit();
+//                TagsFragment tagsFragment = TagsFragment.newInstance();
+//                Bundle extras = new Bundle();
+//                extras.putSerializable(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList);
+//                tagsFragment.setArguments(extras);
+//                FragmentTransaction transaction = getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, tagsFragment)
+//                        .addToBackStack("labels");
+//                transaction.commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

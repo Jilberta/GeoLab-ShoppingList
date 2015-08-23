@@ -9,4 +9,17 @@
 
     <dimen name="color_dialog_size">48dp</dimen>
     <dimen name="color_dialog_tick_size">38dp</dimen>
+
+    <!-- MainActivity Dimensions -->
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!-- MainActivity ListItem Layout Dimensions -->
+    <dimen name="title_margin">5dp</dimen>
+    <dimen name="title_container_margin">10dp</dimen>
+    <dimen name="reminder_text_size">10sp</dimen>
+    <dimen name="item_container_margin">4dp</dimen>
+    <dimen name="item_view_start_padding">10dp</dimen>
+    <dimen name="progress_label_text_size">10sp</dimen>
+    <dimen name="progress_bar_margin">5dp</dimen>
+
 </resources>

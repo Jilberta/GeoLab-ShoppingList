@@ -21,6 +21,11 @@ import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 public class ListColorDialog extends DialogFragment {
     private int currentColor;
 
+    public interface ListColorDialogListener{
+        void onFinishListColorDialog(int color);
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +53,10 @@ public class ListColorDialog extends DialogFragment {
             newColorView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.putExtra("ClickedColor", ((ColorView)v).getColor());
-                    onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+//                    Intent intent = new Intent();
+//                    intent.putExtra("ClickedColor", ((ColorView)v).getColor());
+//                    onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+                    ((ListColorDialogListener)getActivity()).onFinishListColorDialog(((ColorView)v).getColor());
                     dismiss();
                 }
             });

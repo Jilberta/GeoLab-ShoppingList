@@ -14,6 +14,10 @@ import leavingstone.geolab.shoppinglist.R;
  */
 public class ShoppingListChangeTypeDialog extends DialogFragment {
 
+    public interface ListChangeTypeDialogListener {
+        void onFinishListChangeTypeDialog(int result);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -27,7 +31,8 @@ public class ShoppingListChangeTypeDialog extends DialogFragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, getActivity().getIntent());
+                //onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, getActivity().getIntent());
+                ((ListChangeTypeDialogListener) getActivity()).onFinishListChangeTypeDialog(Activity.RESULT_OK);
                 dismiss();
             }
         });
@@ -35,7 +40,8 @@ public class ShoppingListChangeTypeDialog extends DialogFragment {
         keep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, getActivity().getIntent());
+                //onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, getActivity().getIntent());
+                ((ListChangeTypeDialogListener) getActivity()).onFinishListChangeTypeDialog(Activity.RESULT_CANCELED);
                 dismiss();
             }
         });

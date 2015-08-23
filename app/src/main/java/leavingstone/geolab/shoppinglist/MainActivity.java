@@ -2,10 +2,13 @@ package leavingstone.geolab.shoppinglist;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +26,7 @@ import java.util.Calendar;
 
 import leavingstone.geolab.shoppinglist.activities.ShoppingListItemActivity;
 import leavingstone.geolab.shoppinglist.adapters.MainFragmentListAdapter;
+import leavingstone.geolab.shoppinglist.adapters.RecyclerAdapter;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 
@@ -50,6 +54,7 @@ public class MainActivity extends ActionBarActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 //        ActionBar actionbar = getSupportActionBar();
 //        if(actionbar != null){
 //            actionbar.setDisplayHomeAsUpEnabled(true);
@@ -86,13 +91,21 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-        ListView list = (ListView) findViewById(android.R.id.list);
-        MainFragmentListAdapter adapter = new MainFragmentListAdapter(this, DBManager.getShoppingList(null));
-        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
-        animationAdapter.setAbsListView(list);
-        list.setAdapter(animationAdapter);
+//        ListView list = (ListView) findViewById(android.R.id.list);
+//        MainFragmentListAdapter adapter = new MainFragmentListAdapter(this, DBManager.getShoppingList(null));
+//        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
+//        animationAdapter.setAbsListView(list);
+//        list.setAdapter(animationAdapter);
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        RecyclerView recyclerView = (RecyclerView) findViewById(android.R.id.list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+
+        RecyclerAdapter adapter = new RecyclerAdapter(this, DBManager.getShoppingList(null));
+        recyclerView.setAdapter(adapter);
+
+    /*    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
@@ -111,9 +124,9 @@ public class MainActivity extends ActionBarActivity {
                 shoppingList.putExtras(extras);
                 startActivity(shoppingList);
             }
-        });
+        });*/
 
-        Button newList = (Button)findViewById(R.id.newList);
+        FloatingActionButton newList = (FloatingActionButton)findViewById(R.id.newList);
         newList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,6 +152,8 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(shoppingList);
             }
         });
+
+
     }
 
     @Override
@@ -146,19 +161,19 @@ public class MainActivity extends ActionBarActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 //        if (!mNavigationDrawerFragment.isDrawerOpen()) {
 //            // Only show items in the action bar relevant to this screen
 //            // if the drawer is not showing. Otherwise, let the drawer
 //            // decide what to show in the action bar.
-//            getMenuInflater().inflate(R.menu.main, menu);
+//
 //
 //
 //            restoreActionBar();
 //            return true;
 //        }
+        getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

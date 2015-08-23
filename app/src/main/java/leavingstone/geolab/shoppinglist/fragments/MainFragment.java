@@ -107,14 +107,14 @@ public class MainFragment extends Fragment {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
-                Bundle extras = new Bundle();
-                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, ((ShoppingListModel) parent.getAdapter().getItem(position)).getId());
-                shoppingListFragment.setArguments(extras);
-                FragmentTransaction ft = getFragmentManager().beginTransaction()
-                        .replace(R.id.container, shoppingListFragment)
-                        .addToBackStack("transaction");
-                ft.commit();
+//                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
+//                Bundle extras = new Bundle();
+//                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, ((ShoppingListModel) parent.getAdapter().getItem(position)).getId());
+//                shoppingListFragment.setArguments(extras);
+//                FragmentTransaction ft = getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, shoppingListFragment)
+//                        .addToBackStack("transaction");
+//                ft.commit();
             }
         });
 
@@ -122,19 +122,19 @@ public class MainFragment extends Fragment {
         newList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String date = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime());
-                ShoppingListModel shoppingListModel = new ShoppingListModel(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal(), date);
-                long id = DBManager.insertShoppingList(shoppingListModel);
-                shoppingListModel.setId(id);
+//                String date = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime());
+//                ShoppingListModel shoppingListModel = new ShoppingListModel(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal(), date);
+//                long id = DBManager.insertShoppingList(shoppingListModel);
+//                shoppingListModel.setId(id);
 
-                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
-                Bundle extras = new Bundle();
-                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingListModel.getId());
-                shoppingListFragment.setArguments(extras);
-                FragmentTransaction ft = getFragmentManager().beginTransaction()
-                        .replace(R.id.container, shoppingListFragment)
-                        .addToBackStack("transaction");
-                ft.commit();
+//                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
+//                Bundle extras = new Bundle();
+//                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingListModel.getId());
+//                shoppingListFragment.setArguments(extras);
+//                FragmentTransaction ft = getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, shoppingListFragment)
+//                        .addToBackStack("transaction");
+//                ft.commit();
 
             }
         });

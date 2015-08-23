@@ -7,6 +7,53 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!--<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+        <!--android:id="@+id/main_content"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+        <!--<android.support.design.widget.AppBarLayout-->
+            <!--android:id="@+id/appbar"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">-->
+
+            <!--&lt;!&ndash; The ActionBar &ndash;&gt;-->
+            <!--<include-->
+                <!--layout="@layout/toolbar"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content" />-->
+
+        <!--</android.support.design.widget.AppBarLayout>-->
+
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@android:id/list"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"/>-->
+
+        <!--&lt;!&ndash;<Button&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/newList"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_gravity="bottom|right"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:text="New List" />&ndash;&gt;-->
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/newList"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|end"-->
+            <!--android:layout_margin="@dimen/fab_margin"-->
+            <!--app:backgroundTint="@android:color/holo_red_light"-->
+            <!--app:fabSize="normal"-->
+            <!--app:elevation="6dp"-->
+            <!--app:pressedTranslationZ="12dp"-->
+            <!--app:layout_behavior="leavingstone.geolab.shoppinglist.listeners.ScrollAwareFABBehavior"/>-->
+
+
+    <!--</android.support.design.widget.CoordinatorLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,17 +73,33 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ListView
+            <!--<ListView-->
+                <!--android:id="@android:id/list"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent" />-->
+
+            <android.support.v7.widget.RecyclerView
                 android:id="@android:id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <Button
+            <!--<Button-->
+                <!--android:id="@+id/newList"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="bottom|right"-->
+                <!--android:text="New List" />-->
+
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/newList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:text="New List" />
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                app:backgroundTint="@android:color/holo_red_light"
+                app:fabSize="normal"
+                app:elevation="6dp"
+                app:pressedTranslationZ="12dp"/>
 
         </FrameLayout>
     </LinearLayout>

@@ -6,10 +6,13 @@
     <!--</style>-->
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
         <item name="android:colorPrimary">@color/toolbar_color</item>
+        <item name="android:colorPrimaryDark">@android:color/holo_blue_dark</item>
+        <!--<item name="android:colorAccent">@android:color/white</item>-->
         <item name="android:windowBackground">@color/background_color</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
         <!-- Customize your theme here. -->
         <item name="android:windowContentTransitions">true</item>
@@ -25,15 +28,15 @@
         <!--<item name="android:windowSharedElementExitTransition">@transition/change_text_transform</item>-->
     </style>
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat">
-        <!--<item name="colorPrimary">@color/primary</item>-->
-        <!--<item name="colorPrimaryDark">@color/primaryDarker</item>-->
-        <item name="android:colorPrimary">@color/toolbar_color</item>
-        <item name="android:windowBackground">@color/background_color</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-    </style>
+    <!--<style name="AppTheme.Base" parent="Theme.AppCompat">-->
+        <!--&lt;!&ndash;<item name="colorPrimary">@color/primary</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="colorPrimaryDark">@color/primaryDarker</item>&ndash;&gt;-->
+        <!--<item name="android:colorPrimary">@color/toolbar_color</item>-->
+        <!--<item name="android:windowBackground">@color/background_color</item>-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+    <!--</style>-->
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>

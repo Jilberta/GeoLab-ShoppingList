@@ -46,6 +46,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
 import leavingstone.geolab.shoppinglist.async.ListItemsUpdater;
 import leavingstone.geolab.shoppinglist.custom_views.CheckBoxView;
@@ -73,7 +74,7 @@ import com.sleepbot.datetimepicker.time.TimePickerDialog;
 public class ShoppingListItemActivity extends ActionBarActivity
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         com.google.android.gms.location.LocationListener, ResultCallback<Status>,
-        OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+        OnDateSetListener, TimePickerDialog.OnTimeSetListener, ListColorDialog.ListColorDialogListener, ShoppingListChangeTypeDialog.ListChangeTypeDialogListener {
 
     private static final int PLACE_PICKER_REQUEST = 1;
     public static final int DIALOG_FRAGMENT = 2;
@@ -100,6 +101,9 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        TextView toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        toolbarTitle.setVisibility(View.GONE);
 
         if(getIntent().getExtras() != null){
             long id = getIntent().getExtras().getLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY);
@@ -337,6 +341,11 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 shoppingList = null;
                 listItems = null;
 
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
 //                MainFragment mainFragment = MainFragment.newInstance();
 //                getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 //                FragmentTransaction ft = getFragmentManager().beginTransaction()
@@ -353,7 +362,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 shoppingList.setType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
                 if (checkedContainer.getChildCount() != 0) {
                     ShoppingListChangeTypeDialog dialog = new ShoppingListChangeTypeDialog();
-                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
+//                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
                     dialog.show(getSupportFragmentManager(), "ShoppingListChangeTypeDialog");
                 } else
                     changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
@@ -363,9 +372,9 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 Bundle extras = new Bundle();
                 extras.putSerializable(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList);
                 tagsFragment.setArguments(extras);
+//
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, tagsFragment)
-                        .addToBackStack("labels");
+                        .add(android.R.id.content, tagsFragment, "TagsFragment");
                 transaction.commit();
                 return true;
             default:
@@ -470,38 +479,40 @@ public class ShoppingListItemActivity extends ActionBarActivity
                     //   startUpdatesButtonHandler();
                 }
                 break;
-            case DIALOG_FRAGMENT:
-                if (resultCode == Activity.RESULT_OK) {
-                    for (int i = 0; i < listItems.size(); i++) {
-                        if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
-                            listItems.get(i).setIsDeleted(true);
-                        }
-                    }
-                    checkedContainer.removeAllViews();
-                } else if (resultCode == Activity.RESULT_CANCELED) {
-                    for (int i = 0; i < listItems.size(); i++) {
-                        if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
-                            listItems.get(i).setIsChecked(ListItemModel.ListItemState.UnChecked.ordinal());
-                        }
-                    }
-                    for(int i = 0; i < checkedContainer.getChildCount(); i++){
-                        CheckBoxView checkedItem = (CheckBoxView) checkedContainer.getChildAt(i);
-                        checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
-                    }
-                }
-                changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
-                break;
-            case COLOR_DIALOG_FRAGMENT:
-                if(resultCode == Activity.RESULT_OK){
-                    int color = data.getIntExtra("ClickedColor", 0);
-                    shoppingList.setColor(color);
-//                    getView().setBackgroundColor(color);
-//                    getView().setBackground(new ColorDrawable(color));
-                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
-                }
-                break;
             default:
                 break;
+//            case DIALOG_FRAGMENT:
+//                if (resultCode == Activity.RESULT_OK) {
+//                    for (int i = 0; i < listItems.size(); i++) {
+//                        if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+//                            listItems.get(i).setIsDeleted(true);
+//                        }
+//                    }
+//                    checkedContainer.removeAllViews();
+//                } else if (resultCode == Activity.RESULT_CANCELED) {
+//                    for (int i = 0; i < listItems.size(); i++) {
+//                        if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+//                            listItems.get(i).setIsChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+//                        }
+//                    }
+//                    for(int i = 0; i < checkedContainer.getChildCount(); i++){
+//                        CheckBoxView checkedItem = (CheckBoxView) checkedContainer.getChildAt(i);
+//                        checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+//                    }
+//                }
+//                changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+//                break;
+//            case COLOR_DIALOG_FRAGMENT:
+//                if(resultCode == Activity.RESULT_OK){
+//                    int color = data.getIntExtra("ClickedColor", 0);
+//                    shoppingList.setColor(color);
+////                    getView().setBackgroundColor(color);
+////                    getView().setBackground(new ColorDrawable(color));
+//                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+//                }
+//                break;
+//            default:
+//                break;
         }
     }
 
@@ -940,5 +951,36 @@ public class ShoppingListItemActivity extends ActionBarActivity
     private void changeFragmentColor(View root, int color){
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
         root.setBackgroundColor(color);
+    }
+
+    @Override
+    public void onFinishListColorDialog(int color) {
+        shoppingList.setColor(color);
+//                    getView().setBackgroundColor(color);
+//                    getView().setBackground(new ColorDrawable(color));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+    }
+
+    @Override
+    public void onFinishListChangeTypeDialog(int resultCode) {
+        if (resultCode == Activity.RESULT_OK) {
+            for (int i = 0; i < listItems.size(); i++) {
+                if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+                    listItems.get(i).setIsDeleted(true);
+                }
+            }
+            checkedContainer.removeAllViews();
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            for (int i = 0; i < listItems.size(); i++) {
+                if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+                    listItems.get(i).setIsChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+                }
+            }
+            for(int i = 0; i < checkedContainer.getChildCount(); i++){
+                CheckBoxView checkedItem = (CheckBoxView) checkedContainer.getChildAt(i);
+                checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+            }
+        }
+        changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
     }
 }
