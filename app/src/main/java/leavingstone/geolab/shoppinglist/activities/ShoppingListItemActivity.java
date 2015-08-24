@@ -65,6 +65,13 @@ import leavingstone.geolab.shoppinglist.receivers.AlarmReceiver;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
@@ -74,7 +81,8 @@ import com.sleepbot.datetimepicker.time.TimePickerDialog;
 public class ShoppingListItemActivity extends ActionBarActivity
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         com.google.android.gms.location.LocationListener, ResultCallback<Status>,
-        OnDateSetListener, TimePickerDialog.OnTimeSetListener, ListColorDialog.ListColorDialogListener, ShoppingListChangeTypeDialog.ListChangeTypeDialogListener {
+        OnDateSetListener, TimePickerDialog.OnTimeSetListener, ListColorDialog.ListColorDialogListener,
+        ShoppingListChangeTypeDialog.ListChangeTypeDialogListener, OnMapReadyCallback {
 
     private static final int PLACE_PICKER_REQUEST = 1;
     public static final int DIALOG_FRAGMENT = 2;
@@ -105,7 +113,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
         TextView toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
         toolbarTitle.setVisibility(View.GONE);
 
-        if(getIntent().getExtras() != null){
+        if (getIntent().getExtras() != null) {
             long id = getIntent().getExtras().getLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY);
             shoppingList = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_ID + " = " + id).get(0);
             System.out.println(shoppingList);
@@ -115,6 +123,10 @@ public class ShoppingListItemActivity extends ActionBarActivity
         actionbar.setDisplayHomeAsUpEnabled(true);
 
 
+        GoogleMapOptions options = new GoogleMapOptions().liteMode(true);
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
 
 //        changeFragmentColor(rootView, shoppingList.getColor());
@@ -249,22 +261,22 @@ public class ShoppingListItemActivity extends ActionBarActivity
         });
     }
 
-    private void loadShoppingList(){
-        if(shoppingList.getTitle() != null)
+    private void loadShoppingList() {
+        if (shoppingList.getTitle() != null)
             titleView.setText(shoppingList.getTitle());
 
-        if(shoppingList.getAlarmDate() != null){
+        if (shoppingList.getAlarmDate() != null) {
             ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText(shoppingList.getAlarmDate());
             reminderPin.setVisibility(View.VISIBLE);
         }
 
-        if(shoppingList.getLocationReminder() != null){
+        if (shoppingList.getLocationReminder() != null) {
             ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText(shoppingList.getLocationReminder().getAddress());
             locationPin.setVisibility(View.VISIBLE);
         }
 
-        if(shoppingList.getTags() != null && !shoppingList.getTags().isEmpty()){
-            for(int i = 0; i < shoppingList.getTags().size(); i++){
+        if (shoppingList.getTags() != null && !shoppingList.getTags().isEmpty()) {
+            for (int i = 0; i < shoppingList.getTags().size(); i++) {
                 TextView tag = new TextView(mActivity);
                 tag.setBackground(getResources().getDrawable(R.drawable.tag_background_white));
 
@@ -298,7 +310,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
     }
 
     private void saveUpdatedData() {
-        if(titleView != null && shoppingList != null){
+        if (titleView != null && shoppingList != null) {
             String title = String.valueOf(titleView.getText());
             shoppingList.setTitle(title);
         }
@@ -419,7 +431,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
         Toast.makeText(mActivity, reminderPinText, Toast.LENGTH_LONG).show();
 
         reminderPin.setVisibility(View.VISIBLE);
-        ((TextView)reminderPin.findViewById(R.id.reminder_pin_text)).setText(reminderPinText);
+        ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText(reminderPinText);
 
         shoppingList.setAlarmDate(reminderPinText);
         DBManager.updateShoppingList(shoppingList);
@@ -473,7 +485,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
                     shoppingList.setLocationReminder(locationModel);
                     DBManager.updateShoppingList(shoppingList);
 
-                    ((TextView)locationPin.findViewById(R.id.location_pin_text)).setText(locationModel.getAddress());
+                    ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText(locationModel.getAddress());
                     locationPin.setVisibility(View.VISIBLE);
 
                     //   startUpdatesButtonHandler();
@@ -948,7 +960,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //        }
 //    }
 
-    private void changeFragmentColor(View root, int color){
+    private void changeFragmentColor(View root, int color) {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
         root.setBackgroundColor(color);
     }
@@ -976,11 +988,20 @@ public class ShoppingListItemActivity extends ActionBarActivity
                     listItems.get(i).setIsChecked(ListItemModel.ListItemState.UnChecked.ordinal());
                 }
             }
-            for(int i = 0; i < checkedContainer.getChildCount(); i++){
+            for (int i = 0; i < checkedContainer.getChildCount(); i++) {
                 CheckBoxView checkedItem = (CheckBoxView) checkedContainer.getChildAt(i);
                 checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
             }
         }
         changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng place = new LatLng(41.806363, 44.768531);
+        googleMap.addMarker(new MarkerOptions()
+                .position(place)
+                .title("Quchis Saxeli"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(place));
     }
 }

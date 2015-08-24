@@ -99,7 +99,7 @@
                 app:backgroundTint="@android:color/holo_red_light"
                 app:fabSize="normal"
                 app:elevation="6dp"
-                app:pressedTranslationZ="12dp"/>
+                app:pressedTranslationZ="12dp" />
 
         </FrameLayout>
     </LinearLayout>

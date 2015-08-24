@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "leavingstone.geolab.shoppinglist"
+        applicationId "leavingstone.geolab.shoppinglistNew"
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 1

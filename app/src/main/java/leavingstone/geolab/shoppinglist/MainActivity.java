@@ -38,6 +38,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Toolbar toolbar;
     private Activity mActivity;
+    private int mScrollOffset = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
 //        }
 
 
-
 //        ListView list = (ListView) findViewById(android.R.id.list);
 //        MainFragmentListAdapter adapter = new MainFragmentListAdapter(this, DBManager.getShoppingList(null));
 //        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
@@ -126,7 +126,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });*/
 
-        FloatingActionButton newList = (FloatingActionButton)findViewById(R.id.newList);
+        final FloatingActionButton newList = (FloatingActionButton) findViewById(R.id.newList);
         newList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,7 +154,21 @@ public class MainActivity extends ActionBarActivity {
         });
 
 
-    }
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (Math.abs(dy) > mScrollOffset) {
+                    if (dy > 0) {
+                        newList.hide();
+                    } else {
+                        newList.show();
+                    }
+                }
+            }
+        });
+
+}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
