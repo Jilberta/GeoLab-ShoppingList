@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -128,6 +130,20 @@ public class ShoppingListItemActivity extends ActionBarActivity
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+//        mapFragment.getMap().setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+//            @Override
+//            public void onMapClick(LatLng latLng) {
+//                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+//                try {
+//                    startActivityForResult(builder.build(mActivity), PLACE_PICKER_REQUEST);
+//                } catch (GooglePlayServicesRepairableException e) {
+//                    e.printStackTrace();
+//                } catch (GooglePlayServicesNotAvailableException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
 
 //        changeFragmentColor(rootView, shoppingList.getColor());
@@ -998,11 +1014,25 @@ public class ShoppingListItemActivity extends ActionBarActivity
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         LatLng place = new LatLng(41.806363, 44.768531);
         googleMap.addMarker(new MarkerOptions()
                 .position(place)
                 .title("Quchis Saxeli"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(place));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLng(place));
+       // googleMap.animateCamera(place);
+
+//        final ImageView mapPreview = (ImageView) findViewById(R.id.mapView);
+//        googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+//            @Override
+//            public void onMapLoaded() {
+//                googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+//                    @Override
+//                    public void onSnapshotReady(Bitmap bitmap) {
+//                        mapPreview.setImageBitmap(bitmap);
+//                    }
+//                });
+//            }
+//        });
     }
 }
