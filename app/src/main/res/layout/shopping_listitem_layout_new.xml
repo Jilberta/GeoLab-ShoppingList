@@ -43,15 +43,31 @@
                     android:textColor="@android:color/black"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/reminder"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:text="After tomorrow"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/reminder_text_size" />
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/alarm_icon" />
+
+                    <TextView
+                        android:id="@+id/reminder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/reminder_left_image_margin"
+                        android:text="After tomorrow"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/reminder_text_size" />
+
+                </LinearLayout>
+
 
             </LinearLayout>
 
@@ -86,9 +102,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_marginStart="@dimen/progress_bar_margin"
                     android:layout_weight="1.4"
+                    android:gravity="center"
                     android:text="Progress"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/progress_label_text_size" />
@@ -110,10 +126,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_marginEnd="@dimen/progress_bar_margin"
                     android:layout_marginStart="@dimen/progress_bar_margin"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:text="0%"
                     android:textColor="@android:color/black"
                     android:textStyle="bold" />

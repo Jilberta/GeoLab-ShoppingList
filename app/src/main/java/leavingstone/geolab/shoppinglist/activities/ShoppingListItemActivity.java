@@ -103,7 +103,8 @@ public class ShoppingListItemActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.shopping_list_fragment);
+        setContentView(R.layout.shopping_list_item_activity);
+//        setContentView(R.layout.shopping_list_fragment);
 
         mActivity = this;
 
