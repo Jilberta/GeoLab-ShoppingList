@@ -9,10 +9,17 @@
         <!--app:actionViewClass="android.support.v7.widget.SearchView"/>-->
 
     <item
+        android:id="@+id/addTags"
+        android:title="Add Tags"
+        android:visible="true"
+        android:icon="@drawable/label_icon"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/listColor"
         android:title="@string/listColor"
         android:visible="true"
-        android:icon="@drawable/color_icon"
+        android:icon="@drawable/palitra_icon"
         app:showAsAction="ifRoom" />
 
     <item
@@ -34,15 +41,10 @@
         android:visible="false"
         app:showAsAction="never|withText" />
 
-    <item
-        android:id="@+id/addTags"
-        android:title="Add Tags"
-        android:visible="true"
-        app:showAsAction="never|withText" />
 
-    <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_settings"-->
+        <!--android:title="@string/action_settings"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="never" />-->
 </menu>

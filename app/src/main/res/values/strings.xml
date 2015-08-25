@@ -89,4 +89,10 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
 
+    <!-- ShoppingList Activity -->
+    <string name="date_reminder_text">Remind Me</string>
+    <string name="title_activity_tags">TagsActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+
 </resources>

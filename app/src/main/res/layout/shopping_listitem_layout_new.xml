@@ -41,13 +41,14 @@
                     android:layout_weight="2"
                     android:text="Do it tomorrow"
                     android:textColor="@android:color/black"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textSize="@dimen/title_text_size"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -62,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/reminder_left_image_margin"
-                        android:text="After tomorrow"
+                        android:text="@string/date_reminder_text"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/reminder_text_size" />
 

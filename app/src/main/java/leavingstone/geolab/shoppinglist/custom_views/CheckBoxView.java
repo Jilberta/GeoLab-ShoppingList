@@ -1,6 +1,7 @@
 package leavingstone.geolab.shoppinglist.custom_views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import leavingstone.geolab.shoppinglist.R;
 import leavingstone.geolab.shoppinglist.model.ListItemModel;
@@ -24,7 +26,8 @@ public class CheckBoxView extends LinearLayout implements ListItemView {
     private LinearLayout parentView;
     private CheckBox checkBox;
     private EditText editText;
-    private Button removeBtn;
+//    private Button removeBtn;
+    private ImageButton removeBtn;
 
     private int listType = ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal();
     private LinearLayout checkedContainer, uncheckedContainer;
@@ -45,7 +48,10 @@ public class CheckBoxView extends LinearLayout implements ListItemView {
         parentView = (LinearLayout) inflater.inflate(R.layout.checkbox_custom_view, this, true);
         checkBox = (CheckBox) parentView.findViewById(R.id.checkBox);
         editText = (EditText) parentView.findViewById(R.id.text);
-        removeBtn = (Button) parentView.findViewById(R.id.removeBtn);
+//        removeBtn = (Button) parentView.findViewById(R.id.removeBtn);
+        removeBtn = (ImageButton) parentView.findViewById(R.id.removeBtn);
+
+        removeBtn.setColorFilter(Color.RED);
 
         setValue(this.listItem);
 

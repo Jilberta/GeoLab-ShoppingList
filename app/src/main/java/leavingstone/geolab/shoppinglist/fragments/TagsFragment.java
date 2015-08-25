@@ -58,13 +58,13 @@ public class TagsFragment extends Fragment {
 
         this.tags = DBManager.getTags(null);
 
-//        this.tags = new ArrayList<String>();
-//        for (int i = 0; i < 10; i++) {
-//            if(i%2 == 0)
-//                this.tags.add("Avoe " + i);
-//            else
-//                this.tags.add("Geo " + i);
-//        }
+        this.tags = new ArrayList<String>();
+        for (int i = 0; i < 10; i++) {
+            if(i%2 == 0)
+                this.tags.add("Avoe " + i);
+            else
+                this.tags.add("Geo " + i);
+        }
 
 //        ActionBar actionbar = ((ActionBarActivity)getActivity()).getSupportActionBar();
 //        actionbar.setDisplayShowTitleEnabled(false);

@@ -43,7 +43,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Notification.Builder nBuilder = new Notification.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Alarm Notification")
-                .setContentText("Shit Just Got Real");
+                .setContentText("Reminding Your Reminder");
         nBuilder.setAutoCancel(true);
 
         Intent resultIntent;
@@ -58,7 +58,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         resultIntent.setAction(context.getString(R.string.shopping_list_fragment));
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(MainActivity.class);
+//        stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         nBuilder.setContentIntent(resultPendingIntent);

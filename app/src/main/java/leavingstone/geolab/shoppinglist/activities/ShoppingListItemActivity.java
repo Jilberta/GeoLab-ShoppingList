@@ -6,15 +6,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -22,8 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +43,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
@@ -72,7 +68,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
@@ -95,12 +93,18 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
     private ShoppingListModel shoppingList;
     private ArrayList<ListItemModel> listItems;
-    private LinearLayout uncheckedContainer, checkedContainer, tagsContainer;
+    private LinearLayout uncheckedContainer, checkedContainer, tagsContainer, dateReminder;
+    private CardView cardView;
     private EditText titleView;
     private RelativeLayout locationPin, reminderPin;
+    private ProgressBar progressBar;
+    private TextView progressBarLabel, locationPinAddressLabel;
     private Activity mActivity;
     private Toolbar toolbar;
     private Calendar alarmDate;
+
+    private GoogleMap mMap;
+    private Marker mCurrentMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,63 +133,66 @@ public class ShoppingListItemActivity extends ActionBarActivity
         GoogleMapOptions options = new GoogleMapOptions().liteMode(true);
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
+        mapFragment.getView().setClickable(true);
         mapFragment.getMapAsync(this);
+        mapFragment.getMap().setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                openPlacePicker();
+                return true;
+            }
+        });
 
-//        mapFragment.getMap().setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-//            @Override
-//            public void onMapClick(LatLng latLng) {
-//                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-//                try {
-//                    startActivityForResult(builder.build(mActivity), PLACE_PICKER_REQUEST);
-//                } catch (GooglePlayServicesRepairableException e) {
-//                    e.printStackTrace();
-//                } catch (GooglePlayServicesNotAvailableException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+        mapFragment.getMap().setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                openPlacePicker();
+            }
+        });
 
-
-//        changeFragmentColor(rootView, shoppingList.getColor());
-
+        cardView = (CardView) findViewById(R.id.card_view);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBarLabel = (TextView) findViewById(R.id.progress_percentage_label);
         tagsContainer = (LinearLayout) findViewById(R.id.tags);
         uncheckedContainer = (LinearLayout) findViewById(R.id.unchecked_container);
         checkedContainer = (LinearLayout) findViewById(R.id.checked_container);
+        dateReminder = (LinearLayout) findViewById(R.id.date_reminder);
+        locationPinAddressLabel = (TextView) findViewById(R.id.location_pin_address);
 
-        locationPin = (RelativeLayout) findViewById(R.id.location_pin);
-        reminderPin = (RelativeLayout) findViewById(R.id.reminder_pin);
-
-        locationPin.findViewById(R.id.location_pin_remove).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText("");
-                locationPin.setVisibility(View.GONE);
-
-                List<String> locationReminderRequestId = new ArrayList<String>();
-                locationReminderRequestId.add("" + shoppingList.getId());
-
-                LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, locationReminderRequestId);
-                shoppingList.setLocationReminder(null);
-                shoppingList.setLocationReminderJson(null);
-                DBManager.updateShoppingList(shoppingList);
-            }
-        });
-
-        reminderPin.findViewById(R.id.reminder_pin_remove).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText("");
-                reminderPin.setVisibility(View.GONE);
-
-                Intent intentAlarm = new Intent(mActivity, AlarmReceiver.class);
-//                intentAlarm.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList.getId());
-                AlarmManager alarmManager = (AlarmManager) mActivity.getSystemService(Context.ALARM_SERVICE);
-                alarmManager.cancel(PendingIntent.getBroadcast(mActivity, (int) shoppingList.getId(), intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
-
-                shoppingList.setAlarmDate(null);
-                DBManager.updateShoppingList(shoppingList);
-            }
-        });
+//        locationPin = (RelativeLayout) findViewById(R.id.location_pin);
+//        reminderPin = (RelativeLayout) findViewById(R.id.reminder_pin);
+//
+//        locationPin.findViewById(R.id.location_pin_remove).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText("");
+//                locationPin.setVisibility(View.GONE);
+//
+//                List<String> locationReminderRequestId = new ArrayList<String>();
+//                locationReminderRequestId.add("" + shoppingList.getId());
+//
+//                LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, locationReminderRequestId);
+//                shoppingList.setLocationReminder(null);
+//                shoppingList.setLocationReminderJson(null);
+//                DBManager.updateShoppingList(shoppingList);
+//            }
+//        });
+//
+//        reminderPin.findViewById(R.id.reminder_pin_remove).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText("");
+//                reminderPin.setVisibility(View.GONE);
+//
+//                Intent intentAlarm = new Intent(mActivity, AlarmReceiver.class);
+////                intentAlarm.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList.getId());
+//                AlarmManager alarmManager = (AlarmManager) mActivity.getSystemService(Context.ALARM_SERVICE);
+//                alarmManager.cancel(PendingIntent.getBroadcast(mActivity, (int) shoppingList.getId(), intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+//
+//                shoppingList.setAlarmDate(null);
+//                DBManager.updateShoppingList(shoppingList);
+//            }
+//        });
 
         titleView = (EditText) findViewById(R.id.listTitle);
 
@@ -207,20 +214,20 @@ public class ShoppingListItemActivity extends ActionBarActivity
             }
         });
 
-        Button placeButton = (Button) findViewById(R.id.placeButton);
-        placeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                try {
-                    startActivityForResult(builder.build(mActivity), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        Button placeButton = (Button) findViewById(R.id.placeButton);
+//        placeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+//                try {
+//                    startActivityForResult(builder.build(mActivity), PLACE_PICKER_REQUEST);
+//                } catch (GooglePlayServicesRepairableException e) {
+//                    e.printStackTrace();
+//                } catch (GooglePlayServicesNotAvailableException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
 
         // Locations
@@ -248,8 +255,18 @@ public class ShoppingListItemActivity extends ActionBarActivity
         final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, false);
 
 
-        Button timePicker = (Button) findViewById(R.id.timeButton);
-        timePicker.setOnClickListener(new View.OnClickListener() {
+//        Button timePicker = (Button) findViewById(R.id.timeButton);
+//        timePicker.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                datePickerDialog.setVibrate(false);
+//                datePickerDialog.setYearRange(1985, 2028);
+//                datePickerDialog.setCloseOnSingleTapDay(false);
+//                datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
+//            }
+//        });
+
+        dateReminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 datePickerDialog.setVibrate(false);
@@ -259,38 +276,52 @@ public class ShoppingListItemActivity extends ActionBarActivity
             }
         });
 
-        Button friendsButton = (Button) findViewById(R.id.friendsButton);
-        friendsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                timePickerDialog.setVibrate(false);
-                timePickerDialog.setCloseOnSingleTapMinute(false);
-                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
-            }
-        });
+//        Button friendsButton = (Button) findViewById(R.id.friendsButton);
+//        friendsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                timePickerDialog.setVibrate(false);
+//                timePickerDialog.setCloseOnSingleTapMinute(false);
+//                timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
+//            }
+//        });
+//
+//        Button shareButton = (Button) findViewById(R.id.shareButton);
+//        shareButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                saveUpdatedData();
+//            }
+//        });
+    }
 
-        Button shareButton = (Button) findViewById(R.id.shareButton);
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveUpdatedData();
-            }
-        });
+    private void openPlacePicker(){
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            startActivityForResult(builder.build(mActivity), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadShoppingList() {
         if (shoppingList.getTitle() != null)
             titleView.setText(shoppingList.getTitle());
 
+        changeListColor(shoppingList.getColor());
+
         if (shoppingList.getAlarmDate() != null) {
-            ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText(shoppingList.getAlarmDate());
-            reminderPin.setVisibility(View.VISIBLE);
+            ((TextView) dateReminder.findViewById(R.id.reminder)).setText(shoppingList.getAlarmDate());
+//            ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText(shoppingList.getAlarmDate());
+//            reminderPin.setVisibility(View.VISIBLE);
         }
 
-        if (shoppingList.getLocationReminder() != null) {
-            ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText(shoppingList.getLocationReminder().getAddress());
-            locationPin.setVisibility(View.VISIBLE);
-        }
+//        if (shoppingList.getLocationReminder() != null) {
+//            ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText(shoppingList.getLocationReminder().getAddress());
+//            locationPin.setVisibility(View.VISIBLE);
+//        }
 
         if (shoppingList.getTags() != null && !shoppingList.getTags().isEmpty()) {
             for (int i = 0; i < shoppingList.getTags().size(); i++) {
@@ -312,6 +343,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
     }
 
     private void loadListItems(LinearLayout checked, LinearLayout unchecked) {
+        int progress = 0;
         if (shoppingList == null)
             return;
         listItems = DBManager.getShoppingListItems(DBHelper.SHOPPING_LIST_ITEM_PARENT_ID + " = " + shoppingList.getId());
@@ -319,11 +351,22 @@ public class ShoppingListItemActivity extends ActionBarActivity
             if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
                 CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
                 checked.addView(item);
+                progress++;
             } else {
                 CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
                 unchecked.addView(item);
             }
         }
+        updateProgress(listItems.size(), progress);
+    }
+
+    private void updateProgress(int maxItems, int progress){
+        progressBar.setMax(maxItems);
+        progressBar.setProgress(progress);
+        if(progress == 0)
+            progressBarLabel.setText("0%");
+        else
+            progressBarLabel.setText((int)((double)progress / maxItems * 100) + "%");
     }
 
     private void saveUpdatedData() {
@@ -397,14 +440,19 @@ public class ShoppingListItemActivity extends ActionBarActivity
                     changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
                 return true;
             case R.id.addTags:
-                TagsFragment tagsFragment = TagsFragment.newInstance();
+                Intent tagsIntent = new Intent(this, TagsActivity.class);
                 Bundle extras = new Bundle();
                 extras.putSerializable(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList);
-                tagsFragment.setArguments(extras);
-//
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
-                        .add(android.R.id.content, tagsFragment, "TagsFragment");
-                transaction.commit();
+                tagsIntent.putExtras(extras);
+                startActivity(tagsIntent);
+//                TagsFragment tagsFragment = TagsFragment.newInstance();
+//                Bundle extras = new Bundle();
+//                extras.putSerializable(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList);
+//                tagsFragment.setArguments(extras);
+////
+//                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
+//                        .add(android.R.id.content, tagsFragment, "TagsFragment");
+//                transaction.commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -447,8 +495,9 @@ public class ShoppingListItemActivity extends ActionBarActivity
         String reminderPinText = new SimpleDateFormat("dd MMMM HH:mm").format(alarmDate.getTime());
         Toast.makeText(mActivity, reminderPinText, Toast.LENGTH_LONG).show();
 
-        reminderPin.setVisibility(View.VISIBLE);
-        ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText(reminderPinText);
+//        reminderPin.setVisibility(View.VISIBLE);
+//        ((TextView) reminderPin.findViewById(R.id.reminder_pin_text)).setText(reminderPinText);
+        ((TextView) dateReminder.findViewById(R.id.reminder)).setText(reminderPinText);
 
         shoppingList.setAlarmDate(reminderPinText);
         DBManager.updateShoppingList(shoppingList);
@@ -502,8 +551,11 @@ public class ShoppingListItemActivity extends ActionBarActivity
                     shoppingList.setLocationReminder(locationModel);
                     DBManager.updateShoppingList(shoppingList);
 
-                    ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText(locationModel.getAddress());
-                    locationPin.setVisibility(View.VISIBLE);
+//                    ((TextView) locationPin.findViewById(R.id.location_pin_text)).setText(locationModel.getAddress());
+//                    locationPin.setVisibility(View.VISIBLE);
+
+                    updateMap(locationModel);
+
 
                     //   startUpdatesButtonHandler();
                 }
@@ -977,17 +1029,17 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //        }
 //    }
 
-    private void changeFragmentColor(View root, int color) {
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
-        root.setBackgroundColor(color);
+    private void changeListColor(int color) {
+        cardView.setBackgroundColor(color);
     }
 
     @Override
     public void onFinishListColorDialog(int color) {
         shoppingList.setColor(color);
+        changeListColor(color);
 //                    getView().setBackgroundColor(color);
 //                    getView().setBackground(new ColorDrawable(color));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
+//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(color));
     }
 
     @Override
@@ -1014,25 +1066,38 @@ public class ShoppingListItemActivity extends ActionBarActivity
     }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap) {
-        LatLng place = new LatLng(41.806363, 44.768531);
-        googleMap.addMarker(new MarkerOptions()
-                .position(place)
-                .title("Quchis Saxeli"));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLng(place));
-       // googleMap.animateCamera(place);
+    public void onMapReady(GoogleMap googleMap) {
+//        LatLng place = new LatLng(41.806363, 44.768531);
+////        CameraPosition cameraPosition = new CameraPosition.Builder()
+////                .target(place)
+////                .zoom(15)
+////                .bearing(0)
+////                .tilt(45)
+////                .build();
+//        googleMap.animateCamera(CameraUpdateFactory.newLatLng(place));
+////        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//        Marker marker = googleMap.addMarker(new MarkerOptions()
+//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_marker_icon))
+//                .position(place)
+//                .anchor(0.5f, 0.5f));
+//        marker.showInfoWindow();
+//        mCurrentMarker = marker;
+        mMap = googleMap;
+        updateMap(new LocationModel(41.806363, 44.768531, "Agmasheneblis Xeivani"));
+    }
 
-//        final ImageView mapPreview = (ImageView) findViewById(R.id.mapView);
-//        googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-//            @Override
-//            public void onMapLoaded() {
-//                googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
-//                    @Override
-//                    public void onSnapshotReady(Bitmap bitmap) {
-//                        mapPreview.setImageBitmap(bitmap);
-//                    }
-//                });
-//            }
-//        });
+    private void updateMap(LocationModel location){
+        if(mMap != null){
+            locationPinAddressLabel.setText(location.getAddress());
+            LatLng place = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(place));
+    //        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            Marker marker = mMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_marker_icon))
+                    .position(place)
+                    .anchor(0.5f, 0.5f));
+    //        marker.showInfoWindow();
+            mCurrentMarker = marker;
+        }
     }
 }
