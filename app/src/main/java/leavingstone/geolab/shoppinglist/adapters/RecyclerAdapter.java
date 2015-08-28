@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.andexert.library.RippleView;
+
 import java.util.ArrayList;
 
 import leavingstone.geolab.shoppinglist.R;
@@ -78,9 +80,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
         shoppingListHolder.progressBar.setMax((int) maxItems);
         shoppingListHolder.progressBar.setProgress((int) checkedCount);
 
-        shoppingListHolder.cardView.setOnClickListener(new View.OnClickListener() {
+//        shoppingListHolder.cardView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent shoppingList = new Intent(context, ShoppingListItemActivity.class);
+//                Bundle extras = new Bundle();
+//                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, list.getId());
+//                shoppingList.putExtras(extras);
+//                context.startActivity(shoppingList);
+//            }
+//        });
+        shoppingListHolder.rippleView.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
-            public void onClick(View v) {
+            public void onComplete(RippleView rippleView) {
                 Intent shoppingList = new Intent(context, ShoppingListItemActivity.class);
                 Bundle extras = new Bundle();
                 extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, list.getId());
@@ -92,6 +104,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
 
     class ShoppingListHolder extends RecyclerView.ViewHolder {
         CardView cardView;
+        RippleView rippleView;
         TextView titleView;
         TextView reminderView;
         LinearLayout itemContainer;
@@ -100,6 +113,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
 
         public ShoppingListHolder(View itemView) {
             super(itemView);
+            rippleView = (RippleView) itemView.findViewById(R.id.card_view_ripple);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
             titleView = (TextView) itemView.findViewById(R.id.title);
             reminderView = (TextView) itemView.findViewById(R.id.reminder);

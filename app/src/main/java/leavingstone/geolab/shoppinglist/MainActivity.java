@@ -1,7 +1,14 @@
 package leavingstone.geolab.shoppinglist;
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.PaintDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,6 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.support.v7.widget.SearchView;
 
@@ -64,6 +72,8 @@ public class MainActivity extends ActionBarActivity {
 //            actionbar.setDisplayHomeAsUpEnabled(true);
 //        }
 
+
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open,
                 R.string.close);
@@ -72,6 +82,21 @@ public class MainActivity extends ActionBarActivity {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.getMenu().add("Label 25");
+
+        final int color = getResources().getColor(R.color.background_color);
+        ShapeDrawable.ShaderFactory sf = new ShapeDrawable.ShaderFactory() {
+            @Override
+            public Shader resize(int width, int height) {
+                return new LinearGradient(0, 0, 0, height,
+                        new int[]{Color.RED, color, color, Color.RED},
+                        new float[]{0, 0.1f, 0.9f, 1}, Shader.TileMode.MIRROR);
+            }
+        };
+
+        PaintDrawable p = new PaintDrawable();
+        p.setShape(new RectShape());
+        p.setShaderFactory(sf);
+        mDrawerLayout.setBackground(p);
 
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
@@ -195,6 +220,9 @@ public class MainActivity extends ActionBarActivity {
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         ImageView button = (ImageView) searchView.findViewById(R.id.search_button);
         button.setImageResource(R.drawable.search_icon);
+
+        LinearLayout searchBar = (LinearLayout) searchView.findViewById(R.id.search_bar);
+        searchBar.setLayoutTransition(new LayoutTransition());
 
         return super.onCreateOptionsMenu(menu);
     }
