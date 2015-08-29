@@ -234,6 +234,8 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 CheckBoxView item = new CheckBoxView(mActivity, newItem, shoppingList.getType(), shoppingList.getColor(), uncheckedContainer, progressBar, progressBarLabel);
                 uncheckedContainer.addView(item);
                 item.requestFocus();
+
+                Formater.updateProgress(progressBar.getMax() + 1, progressBar.getProgress(), progressBar, progressBarLabel);
             }
         });
 
@@ -1066,6 +1068,10 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
     private void changeListColor(int color) {
         cardView.setBackgroundColor(color);
+        for(int i = 0; i < uncheckedContainer.getChildCount(); i++){
+            CheckBoxView cbv = (CheckBoxView) uncheckedContainer.getChildAt(i);
+            cbv.setColor(color);
+        }
     }
 
     @Override
