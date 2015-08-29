@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import leavingstone.geolab.shoppinglist.R;
 import leavingstone.geolab.shoppinglist.model.ListItemModel;
+import leavingstone.geolab.shoppinglist.utils.Formater;
 
 /**
  * Created by Jay on 8/23/2015.
@@ -40,22 +41,10 @@ public class ShoppingListItemView extends LinearLayout implements ListItemView {
         setValue(listItem);
         orderView.setText(order + ".");
 
-        int darkerColor = getDarkerColor(color);
+        int darkerColor = Formater.getDarkerColor(color);
 
         itemView.setBackgroundColor(color);
         orderView.setBackgroundColor(darkerColor);
-    }
-
-    private int getDarkerColor(int color) {
-        float[] hsv = new float[3];
-        int darkerColor = color;
-        Color.colorToHSV(darkerColor, hsv);
-        if (color == 0)
-            hsv[2] *= 0.2f;
-        else
-            hsv[2] *= 0.8f; // value component
-        darkerColor = Color.HSVToColor(hsv);
-        return darkerColor;
     }
 
     @Override

@@ -85,7 +85,7 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
 
     private ShoppingListModel shoppingList;
     private ArrayList<ListItemModel> listItems;
-    private LinearLayout uncheckedContainer, checkedContainer, tagsContainer;
+    private LinearLayout orderContainer, uncheckedContainer, checkedContainer, tagsContainer;
     private EditText titleView;
     private RelativeLayout locationPin, reminderPin;
 
@@ -254,8 +254,8 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
                 newItem.setId(id);
 
                 listItems.add(newItem);
-                CheckBoxView item = new CheckBoxView(getActivity(), newItem, shoppingList.getType(), checkedContainer, uncheckedContainer);
-                uncheckedContainer.addView(item);
+//                CheckBoxView item = new CheckBoxView(getActivity(), newItem, shoppingList.getType(), shoppingList.getColor(), uncheckedContainer);
+//                uncheckedContainer.addView(item);
             }
         });
 
@@ -368,15 +368,15 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
         if (shoppingList == null)
             return;
         listItems = DBManager.getShoppingListItems(DBHelper.SHOPPING_LIST_ITEM_PARENT_ID + " = " + shoppingList.getId());
-        for (int i = 0; i < listItems.size(); i++) {
-            if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
-                CheckBoxView item = new CheckBoxView(getActivity(), listItems.get(i), shoppingList.getType(), checked, unchecked);
-                checked.addView(item);
-            } else {
-                CheckBoxView item = new CheckBoxView(getActivity(), listItems.get(i), shoppingList.getType(), checked, unchecked);
-                unchecked.addView(item);
-            }
-        }
+//        for (int i = 0; i < listItems.size(); i++) {
+//            if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+//                CheckBoxView item = new CheckBoxView(getActivity(), listItems.get(i), shoppingList.getType(), shoppingList.getColor(), checked, orderContainer, unchecked);
+//                checked.addView(item);
+//            } else {
+//                CheckBoxView item = new CheckBoxView(getActivity(), listItems.get(i), shoppingList.getType(), shoppingList.getColor(), checked, orderContainer, unchecked);
+//                unchecked.addView(item);
+//            }
+//        }
     }
 
     private void saveUpdatedData() {

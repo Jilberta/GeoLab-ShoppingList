@@ -73,7 +73,6 @@ public class MainActivity extends ActionBarActivity {
 //        }
 
 
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open,
                 R.string.close);
@@ -82,21 +81,6 @@ public class MainActivity extends ActionBarActivity {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.getMenu().add("Label 25");
-
-        final int color = getResources().getColor(R.color.background_color);
-        ShapeDrawable.ShaderFactory sf = new ShapeDrawable.ShaderFactory() {
-            @Override
-            public Shader resize(int width, int height) {
-                return new LinearGradient(0, 0, 0, height,
-                        new int[]{Color.RED, color, color, Color.RED},
-                        new float[]{0, 0.1f, 0.9f, 1}, Shader.TileMode.MIRROR);
-            }
-        };
-
-        PaintDrawable p = new PaintDrawable();
-        p.setShape(new RectShape());
-        p.setShaderFactory(sf);
-        mDrawerLayout.setBackground(p);
 
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
@@ -195,8 +179,24 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
+    }
 
-}
+    private void makeGradientBackground(){
+        final int color = getResources().getColor(R.color.background_color);
+        ShapeDrawable.ShaderFactory sf = new ShapeDrawable.ShaderFactory() {
+            @Override
+            public Shader resize(int width, int height) {
+                return new LinearGradient(0, 0, 0, height,
+                        new int[]{Color.RED, color, color, Color.RED},
+                        new float[]{0, 0.1f, 0.9f, 1}, Shader.TileMode.MIRROR);
+            }
+        };
+
+        PaintDrawable p = new PaintDrawable();
+        p.setShape(new RectShape());
+        p.setShaderFactory(sf);
+        mDrawerLayout.setBackground(p);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

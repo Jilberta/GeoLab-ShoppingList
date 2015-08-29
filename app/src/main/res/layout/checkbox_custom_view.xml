@@ -1,54 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp">
+    android:orientation="horizontal">
     <!--android:layout_marginLeft="10dp"-->
     <!--android:layout_marginRight="10dp"-->
 
     <!--<com.nhaarman.listviewanimations.itemmanipulation.dragdrop.GripView-->
-        <!--android:id="@+id/gripView"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center_vertical"-->
-        <!--/>-->
+    <!--android:id="@+id/gripView"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center_vertical"-->
+    <!--/>-->
 
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:background="@android:color/transparent"/>
-
-    <EditText
-        android:id="@+id/text"
+    <TextView
+        android:id="@+id/order_view"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:background="@android:color/transparent" />
+        android:layout_height="match_parent"
+        android:layout_weight="1.4"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:paddingTop="@dimen/list_items_container_marign"
+        android:paddingBottom="@dimen/list_items_container_marign"/>
 
-    <!--<Button-->
+    <LinearLayout
+        android:id="@+id/itemContainer"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:layout_weight="8"
+        android:layout_marginLeft="5dp">
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent" />
+
+        <EditText
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/removeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:text="x"
+            android:visibility="invisible" />
+
+        <!--<ImageButton-->
         <!--android:id="@+id/removeBtn"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
-        <!--android:text="x"-->
-        <!--android:layout_gravity="top"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginEnd="5dp"-->
         <!--android:visibility="invisible"-->
+        <!--android:src="@drawable/item_delete_icon"-->
         <!--android:background="@android:color/transparent"/>-->
+    </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/removeBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="5dp"
-        android:visibility="invisible"
-        android:src="@drawable/item_delete_icon"
-        android:background="@android:color/transparent"/>
 
 </LinearLayout>

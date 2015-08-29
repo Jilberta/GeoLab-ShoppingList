@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -39,6 +40,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.text.DateFormat;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,6 +62,7 @@ import leavingstone.geolab.shoppinglist.model.ListItemModel;
 import leavingstone.geolab.shoppinglist.model.LocationModel;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 import leavingstone.geolab.shoppinglist.receivers.AlarmReceiver;
+import leavingstone.geolab.shoppinglist.utils.Formater;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -93,7 +96,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
     private ShoppingListModel shoppingList;
     private ArrayList<ListItemModel> listItems;
-    private LinearLayout uncheckedContainer, checkedContainer, tagsContainer, dateReminder;
+    private LinearLayout checkedContainer, uncheckedContainer, tagsContainer, dateReminder;
     private CardView cardView;
     private EditText titleView;
     private RelativeLayout locationPin, reminderPin;
@@ -154,10 +157,15 @@ public class ShoppingListItemActivity extends ActionBarActivity
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBarLabel = (TextView) findViewById(R.id.progress_percentage_label);
         tagsContainer = (LinearLayout) findViewById(R.id.tags);
+
+//        orderContainer = (LinearLayout) findViewById(R.id.order_container);
         uncheckedContainer = (LinearLayout) findViewById(R.id.unchecked_container);
-        checkedContainer = (LinearLayout) findViewById(R.id.checked_container);
+//        checkedContainer = (LinearLayout) findViewById(R.id.checked_container);
         dateReminder = (LinearLayout) findViewById(R.id.date_reminder);
         locationPinAddressLabel = (TextView) findViewById(R.id.location_pin_address);
+
+//        orderContainer.setBackgroundColor(Formater.getDarkerColor(shoppingList.getColor()));
+//        uncheckedContainer.setBackgroundColor(shoppingList.getColor());
 
 //        locationPin = (RelativeLayout) findViewById(R.id.location_pin);
 //        reminderPin = (RelativeLayout) findViewById(R.id.reminder_pin);
@@ -199,18 +207,33 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
         loadShoppingList();
 
-        final EditText newItemValue = (EditText) findViewById(R.id.newItem);
-        Button addNewItem = (Button) findViewById(R.id.addItem);
-        addNewItem.setOnClickListener(new View.OnClickListener() {
+//        final EditText newItemValue = (EditText) findViewById(R.id.newItem);
+//        Button addNewItem = (Button) findViewById(R.id.addItem);
+//        addNewItem.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ListItemModel newItem = new ListItemModel(shoppingList.getId(), String.valueOf(newItemValue.getText()), ListItemModel.ListItemState.UnChecked.ordinal());
+//                long id = DBManager.insertListItem(newItem);
+//                newItem.setId(id);
+//
+//                listItems.add(newItem);
+//                CheckBoxView item = new CheckBoxView(mActivity, newItem, shoppingList.getType(), checkedContainer, uncheckedContainer);
+//                uncheckedContainer.addView(item);
+//            }
+//        });
+
+        FloatingActionButton newItem = (FloatingActionButton) findViewById(R.id.addNewItem);
+        newItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ListItemModel newItem = new ListItemModel(shoppingList.getId(), String.valueOf(newItemValue.getText()), ListItemModel.ListItemState.UnChecked.ordinal());
+                ListItemModel newItem = new ListItemModel(shoppingList.getId(), "", ListItemModel.ListItemState.UnChecked.ordinal());
                 long id = DBManager.insertListItem(newItem);
                 newItem.setId(id);
 
                 listItems.add(newItem);
-                CheckBoxView item = new CheckBoxView(mActivity, newItem, shoppingList.getType(), checkedContainer, uncheckedContainer);
+                CheckBoxView item = new CheckBoxView(mActivity, newItem, shoppingList.getType(), shoppingList.getColor(), uncheckedContainer, progressBar, progressBarLabel);
                 uncheckedContainer.addView(item);
+                item.requestFocus();
             }
         });
 
@@ -348,26 +371,30 @@ public class ShoppingListItemActivity extends ActionBarActivity
             return;
         listItems = DBManager.getShoppingListItems(DBHelper.SHOPPING_LIST_ITEM_PARENT_ID + " = " + shoppingList.getId());
         for (int i = 0; i < listItems.size(); i++) {
-            if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
-                CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
-                checked.addView(item);
+//            if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+//                CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
+//                checked.addView(item);
+//                progress++;
+//            } else {
+//                CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
+//                unchecked.addView(item);
+//            }
+            CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), shoppingList.getColor(), unchecked, progressBar, progressBarLabel);
+            unchecked.addView(item);
+            if(listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal())
                 progress++;
-            } else {
-                CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), checked, unchecked);
-                unchecked.addView(item);
-            }
         }
-        updateProgress(listItems.size(), progress);
+        Formater.updateProgress(listItems.size(), progress, progressBar, progressBarLabel);
     }
 
-    private void updateProgress(int maxItems, int progress){
-        progressBar.setMax(maxItems);
-        progressBar.setProgress(progress);
-        if(progress == 0)
-            progressBarLabel.setText("0%");
-        else
-            progressBarLabel.setText((int)((double)progress / maxItems * 100) + "%");
-    }
+//    private void updateProgress(int maxItems, int progress){
+//        progressBar.setMax(maxItems);
+//        progressBar.setProgress(progress);
+//        if(progress == 0)
+//            progressBarLabel.setText("0%");
+//        else
+//            progressBarLabel.setText((int)((double)progress / maxItems * 100) + "%");
+//    }
 
     private void saveUpdatedData() {
         if (titleView != null && shoppingList != null) {
@@ -432,7 +459,15 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 return true;
             case R.id.hideCheckBoxes:
                 shoppingList.setType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
-                if (checkedContainer.getChildCount() != 0) {
+                boolean shouldShowDialog = false;
+                for(int i = 0; i < uncheckedContainer.getChildCount(); i++){
+                    CheckBoxView cbv = (CheckBoxView) uncheckedContainer.getChildAt(i);
+                    if(cbv.getIsChecked() == ListItemModel.ListItemState.Checked.ordinal()){
+                        shouldShowDialog = true;
+                        break;
+                    }
+                }
+                if (shouldShowDialog) {
                     ShoppingListChangeTypeDialog dialog = new ShoppingListChangeTypeDialog();
 //                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
                     dialog.show(getSupportFragmentManager(), "ShoppingListChangeTypeDialog");
@@ -1050,17 +1085,22 @@ public class ShoppingListItemActivity extends ActionBarActivity
                     listItems.get(i).setIsDeleted(true);
                 }
             }
-            checkedContainer.removeAllViews();
+//            checkedContainer.removeAllViews();
         } else if (resultCode == Activity.RESULT_CANCELED) {
             for (int i = 0; i < listItems.size(); i++) {
                 if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
                     listItems.get(i).setIsChecked(ListItemModel.ListItemState.UnChecked.ordinal());
                 }
             }
-            for (int i = 0; i < checkedContainer.getChildCount(); i++) {
-                CheckBoxView checkedItem = (CheckBoxView) checkedContainer.getChildAt(i);
-                checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+            for (int i = 0; i < uncheckedContainer.getChildCount(); i++) {
+                CheckBoxView checkedItem = (CheckBoxView) uncheckedContainer.getChildAt(i);
+                if(checkedItem.getIsChecked() == ListItemModel.ListItemState.Checked.ordinal())
+                    checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
             }
+//            for (int i = 0; i < checkedContainer.getChildCount(); i++) {
+//                CheckBoxView checkedItem = (CheckBoxView) checkedContainer.getChildAt(i);
+//                checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
+//            }
         }
         changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
     }
