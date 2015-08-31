@@ -18,12 +18,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Choreographer;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -82,6 +84,8 @@ public class MainActivity extends ActionBarActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.getMenu().add("Label 25");
 
+        FrameLayout container = (FrameLayout) findViewById(R.id.container);
+        makeGradientBackground(container);
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction()
@@ -181,21 +185,22 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private void makeGradientBackground(){
+    private void makeGradientBackground(FrameLayout container){
+        final int gradientColor = getResources().getColor(R.color.background_gradient_color);
         final int color = getResources().getColor(R.color.background_color);
         ShapeDrawable.ShaderFactory sf = new ShapeDrawable.ShaderFactory() {
             @Override
             public Shader resize(int width, int height) {
                 return new LinearGradient(0, 0, 0, height,
-                        new int[]{Color.RED, color, color, Color.RED},
-                        new float[]{0, 0.1f, 0.9f, 1}, Shader.TileMode.MIRROR);
+                        new int[]{gradientColor, color, color, gradientColor},
+                        new float[]{0, 0.02f, 0.92f, 1}, Shader.TileMode.MIRROR);
             }
         };
 
         PaintDrawable p = new PaintDrawable();
         p.setShape(new RectShape());
         p.setShaderFactory(sf);
-        mDrawerLayout.setBackground(p);
+        container.setBackground(p);
     }
 
     @Override

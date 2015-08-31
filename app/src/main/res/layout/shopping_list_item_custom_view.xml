@@ -19,7 +19,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="8"
-        android:textColor="@android:color/black"
+        android:textColor="@color/text_color"
         android:gravity="center_vertical"
         android:paddingTop="@dimen/item_container_margin"
         android:paddingBottom="@dimen/item_container_margin"

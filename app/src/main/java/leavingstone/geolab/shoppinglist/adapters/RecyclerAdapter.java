@@ -2,6 +2,9 @@ package leavingstone.geolab.shoppinglist.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.AvoidXfermode;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -56,7 +60,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
     public void onBindViewHolder(ShoppingListHolder shoppingListHolder, int position) {
         final ShoppingListModel list = this.filteredShoppingList.get(position);
         shoppingListHolder.titleView.setText(list.getTitle());
-        shoppingListHolder.reminderView.setText(list.getAlarmDate());
+
+        if(list.getAlarmDate() == null || list.getAlarmDate().isEmpty())
+            shoppingListHolder.reminderView.setText("--/--/--");
+        else
+            shoppingListHolder.reminderView.setText(list.getAlarmDate());
+
+        if(list.getLocationReminder() != null)
+            shoppingListHolder.locationPin.setVisibility(View.VISIBLE);
+        else
+            shoppingListHolder.locationPin.setVisibility(View.INVISIBLE);
 
         ArrayList<ListItemModel> listItems = DBManager.getShoppingListItems(DBHelper.SHOPPING_LIST_ITEM_PARENT_ID + " = " + list.getId());
         double maxItems = listItems.size();
@@ -107,6 +120,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
         RippleView rippleView;
         TextView titleView;
         TextView reminderView;
+        ImageView locationPin;
         LinearLayout itemContainer;
         TextView progressPercentageView;
         ProgressBar progressBar;
@@ -117,9 +131,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
             cardView = (CardView) itemView.findViewById(R.id.card_view);
             titleView = (TextView) itemView.findViewById(R.id.title);
             reminderView = (TextView) itemView.findViewById(R.id.reminder);
+            locationPin = (ImageView) itemView.findViewById(R.id.location_pin);
             itemContainer = (LinearLayout) itemView.findViewById(R.id.item_container);
             progressPercentageView = (TextView) itemView.findViewById(R.id.progress_percentage_label);
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+
+//            progressBar.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
         }
     }
 
