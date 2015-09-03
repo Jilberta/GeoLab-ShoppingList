@@ -1,8 +1,10 @@
 package leavingstone.geolab.shoppinglist.fragments;
 
+import android.animation.LayoutTransition;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.view.LayoutInflater;
@@ -58,13 +60,13 @@ public class TagsFragment extends Fragment {
 
         this.tags = DBManager.getTags(null);
 
-        this.tags = new ArrayList<String>();
-        for (int i = 0; i < 10; i++) {
-            if(i%2 == 0)
-                this.tags.add("Avoe " + i);
-            else
-                this.tags.add("Geo " + i);
-        }
+//        this.tags = new ArrayList<String>();
+//        for (int i = 0; i < 10; i++) {
+//            if(i%2 == 0)
+//                this.tags.add("Avoe " + i);
+//            else
+//                this.tags.add("Geo " + i);
+//        }
 
 //        ActionBar actionbar = ((ActionBarActivity)getActivity()).getSupportActionBar();
 //        actionbar.setDisplayShowTitleEnabled(false);
@@ -90,8 +92,14 @@ public class TagsFragment extends Fragment {
 
 
         MenuItem item = menu.findItem(R.id.search);
+//        item.expandActionView();
         searchView = (SearchView) item.getActionView();
 
+//        LinearLayout searchBar = (LinearLayout) searchView.findViewById(R.id.search_bar);
+//        searchBar.setLayoutTransition(new LayoutTransition());
+//        searchView.setIconified(true);
+//        searchView.onActionViewCollapsed();
+        searchView.setQueryHint("Add Tag");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -130,6 +138,9 @@ public class TagsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tags_fragment_view, container, false);
 
+        LinearLayout tagsContainer = (LinearLayout) rootView.findViewById(R.id.tags_container);
+        tagsContainer.setLayoutTransition(new LayoutTransition());
+
         newTag = (LinearLayout) rootView.findViewById(R.id.newTag);
 
         tagsList = (ListView) rootView.findViewById(R.id.listview);
@@ -145,13 +156,14 @@ public class TagsFragment extends Fragment {
                 txt = txt.replace("\"", "");
                 System.out.println(txt);
                 DBManager.insertTag(txt);
+                tags.add(txt);
                 newTag.setVisibility(View.GONE);
                 searchView.setQuery("", false);
                 ((TagsListAdapter) tagsList.getAdapter()).getFilter().filter(null);
             }
         });
 
-        Button newTagButton = (Button) rootView.findViewById(R.id.newTagButton);
+        ImageButton newTagButton = (ImageButton) rootView.findViewById(R.id.newTagButton);
         newTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,6 +171,7 @@ public class TagsFragment extends Fragment {
                 txt = txt.replace("\"", "");
                 System.out.println(txt);
                 DBManager.insertTag(txt);
+                tags.add(txt);
                 newTag.setVisibility(View.GONE);
                 searchView.setQuery("", false);
                 ((TagsListAdapter) tagsList.getAdapter()).getFilter().filter(null);
@@ -173,6 +186,7 @@ public class TagsFragment extends Fragment {
                 txt = txt.replace("\"", "");
                 System.out.println(txt);
                 DBManager.insertTag(txt);
+                tags.add(txt);
                 newTag.setVisibility(View.GONE);
                 searchView.setQuery("", false);
                 ((TagsListAdapter) tagsList.getAdapter()).getFilter().filter(null);

@@ -3,38 +3,53 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp">
+    android:layout_margin="@dimen/tag_item_side_margin"
+    android:id="@+id/tags_container">
 
     <LinearLayout
         android:id="@+id/newTag"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/tag_item_margin"
+        android:layout_marginBottom="@dimen/tag_item_margin">
 
-        <Button
+        <!--<Button-->
+            <!--android:id="@+id/newTagButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="+"/>-->
+
+        <ImageButton
             android:id="@+id/newTagButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+"/>
+            android:src="@drawable/ic_add_white_24dp"
+            android:background="@android:color/transparent"/>
 
         <TextView
             android:id="@+id/newTagPrefix"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Daamate Axali Tag: "/>
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/new_tag_label_margin_start"
+            android:text="@string/create_new_tag_label"/>
 
         <TextView
             android:id="@+id/newTagText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/new_tag_text_margin_start"
+            android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
 
     <ListView
         android:id="@+id/listview"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="fill_parent"
+        android:dividerHeight="@dimen/tag_item_margin"
+        android:divider="@null"/>
 
 </LinearLayout>

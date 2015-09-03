@@ -42,6 +42,7 @@ import leavingstone.geolab.shoppinglist.adapters.MainFragmentListAdapter;
 import leavingstone.geolab.shoppinglist.adapters.RecyclerAdapter;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
+import leavingstone.geolab.shoppinglist.utils.Utils;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -85,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
         navigationView.getMenu().add("Label 25");
 
         FrameLayout container = (FrameLayout) findViewById(R.id.container);
-        makeGradientBackground(container);
+        Utils.makeGradientBackground(container, getResources());
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction()
@@ -150,6 +151,8 @@ public class MainActivity extends ActionBarActivity {
                 ShoppingListModel shoppingListModel = new ShoppingListModel(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal(), date);
                 long id = DBManager.insertShoppingList(shoppingListModel);
                 shoppingListModel.setId(id);
+//                String [] colors = getResources().getStringArray(R.array.list_colors);
+//                shoppingListModel.setColor(Color.parseColor(colors[0]));
 
 //                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
 //                Bundle extras = new Bundle();
@@ -183,24 +186,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
-    }
-
-    private void makeGradientBackground(FrameLayout container){
-        final int gradientColor = getResources().getColor(R.color.background_gradient_color);
-        final int color = getResources().getColor(R.color.background_color);
-        ShapeDrawable.ShaderFactory sf = new ShapeDrawable.ShaderFactory() {
-            @Override
-            public Shader resize(int width, int height) {
-                return new LinearGradient(0, 0, 0, height,
-                        new int[]{gradientColor, color, color, gradientColor},
-                        new float[]{0, 0.02f, 0.92f, 1}, Shader.TileMode.MIRROR);
-            }
-        };
-
-        PaintDrawable p = new PaintDrawable();
-        p.setShape(new RectShape());
-        p.setShaderFactory(sf);
-        container.setBackground(p);
     }
 
     @Override

@@ -14,6 +14,8 @@
         <item name="android:windowBackground">@color/background_color</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
+        <item name="android:textColorSecondary">@android:color/white</item>
+
 
         <!-- Customize your theme here. -->
         <item name="android:windowContentTransitions">true</item>
@@ -46,6 +48,10 @@
 
     <style name="CustomProgressBarStyle" parent="Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:minHeight">5dip</item>
+    </style>
+
+    <style name="CustomListProgressBarStyle" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:minHeight">3dip</item>
     </style>
 
 </resources>

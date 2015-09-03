@@ -70,20 +70,22 @@
     <string name="menu_search">ძებნა</string>
 
     <string-array name="list_colors" translatable="false">
-        <item>#cccccc</item>
-        <item>#ff4444</item>
-        <item>#ff8800</item>
-        <item>#ffbb33</item>
-        <item>#888888</item>
-        <item>#33b5e5</item>
-        <item>#99cc00</item>
+        <item>#ffffff</item>
+        <item>#ff7474</item>
+        <item>#ff80ab</item>
+        <item>#ffd740</item>
+        <item>#cfd8dc</item>
+        <item>#64b5f6</item>
+        <item>#00e676</item>
         <item>#9933cc</item>
-        <!--<item>#aa66cc</item>-->
-        <!--<item>#0099cc</item>-->
-        <!--<item>#669900</item>-->
-        <!--<item>#cc0000</item>-->
-        <!--<item>#ffffff</item>-->
-        <!--<item>#eeeeee</item>-->
+        <!--<item>#cccccc</item>-->
+        <!--<item>#ff4444</item>-->
+        <!--<item>#ff8800</item>-->
+        <!--<item>#ffbb33</item>-->
+        <!--<item>#888888</item>-->
+        <!--<item>#33b5e5</item>-->
+        <!--<item>#99cc00</item>-->
+        <!--<item>#9933cc</item>-->
     </string-array>
 
     <string name="open">Open</string>
@@ -92,6 +94,10 @@
     <!-- ShoppingList Activity -->
     <string name="date_reminder_text">Remind Me</string>
     <string name="title_activity_tags">TagsActivity</string>
+
+    
+    <!-- Tags Activity -->
+    <string name="create_new_tag_label">Create New Tag: </string>
 
     <string name="hello_world">Hello world!</string>
 

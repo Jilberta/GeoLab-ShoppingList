@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -70,18 +72,21 @@ public class TagsListAdapter extends BaseAdapter implements Filterable {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    if(shoppingList.getTags() == null){
+                if (isChecked) {
+                    if (shoppingList.getTags() == null) {
                         shoppingList.setTags(new ArrayList<String>());
                     }
                     shoppingList.getTags().add(item);
-                }else{
+                } else {
 //                    if(shoppingList.getTags() == null)
 //                        return;
                     shoppingList.getTags().remove(item);
                 }
             }
         });
+
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.show_from_bottom);
+        convertView.startAnimation(animation);
 
         return convertView;
     }

@@ -2,23 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp">
+    android:layout_marginTop="@dimen/tag_item_margin"
+    android:layout_marginBottom="@dimen/tag_item_margin">
 
-    <TextView
+    <!--<TextView-->
+        <!--android:id="@+id/hashtag"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:text="#"-->
+        <!--android:textSize="25sp"/>-->
+
+    <ImageView
         android:id="@+id/hashtag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:text="#"
-        android:textSize="25sp"/>
+        android:src="@drawable/ic_label_white_24dp" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/hashtag"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="@dimen/new_tag_label_margin_start"
         android:layout_centerVertical="true"
         android:textSize="20sp" />
 

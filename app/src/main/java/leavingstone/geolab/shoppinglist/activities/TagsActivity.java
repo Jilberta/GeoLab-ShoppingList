@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
@@ -15,6 +17,7 @@ import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.fragments.TagsFragment;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
+import leavingstone.geolab.shoppinglist.utils.Utils;
 
 public class TagsActivity extends ActionBarActivity {
     private ShoppingListModel shoppingList;
@@ -26,9 +29,13 @@ public class TagsActivity extends ActionBarActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.findViewById(R.id.toolbar_title).setVisibility(View.GONE);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayShowTitleEnabled(false);
         actionbar.setDisplayHomeAsUpEnabled(true);
+
+        FrameLayout container = (FrameLayout) findViewById(R.id.container);
+        Utils.makeGradientBackground(container, getResources());
 
 
         if (getIntent().getExtras() != null) {
@@ -76,11 +83,11 @@ public class TagsActivity extends ActionBarActivity {
             return true;
         }
 
-        if(id == R.id.test){
-            Intent shoppingList = new Intent(this, MainActivity.class);
-            startActivity(shoppingList);
-            return true;
-        }
+//        if(id == R.id.test){
+//            Intent shoppingList = new Intent(this, MainActivity.class);
+//            startActivity(shoppingList);
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

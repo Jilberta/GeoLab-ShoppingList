@@ -27,7 +27,7 @@ public class ShoppingListModel implements Serializable {
     private String title;
     private int type;
     private String date;
-    private int color;
+    private int color = -1;
     private LocationModel locationReminder;
     private String alarmDate;
     private ArrayList<String> tags;

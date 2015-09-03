@@ -6,6 +6,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -63,6 +67,7 @@ import leavingstone.geolab.shoppinglist.model.LocationModel;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 import leavingstone.geolab.shoppinglist.receivers.AlarmReceiver;
 import leavingstone.geolab.shoppinglist.utils.Formater;
+import leavingstone.geolab.shoppinglist.utils.Utils;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -131,6 +136,9 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
+
+        LinearLayout container = (LinearLayout) findViewById(R.id.container);
+        Utils.makeGradientBackground(container, getResources());
 
 
         GoogleMapOptions options = new GoogleMapOptions().liteMode(true);
@@ -320,7 +328,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //        });
     }
 
-    private void openPlacePicker(){
+    private void openPlacePicker() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try {
             startActivityForResult(builder.build(mActivity), PLACE_PICKER_REQUEST);
@@ -335,6 +343,8 @@ public class ShoppingListItemActivity extends ActionBarActivity
         if (shoppingList.getTitle() != null)
             titleView.setText(shoppingList.getTitle());
 
+        if(shoppingList.getColor() == 0)
+            shoppingList.setColor(-1);
         changeListColor(shoppingList.getColor());
 
         if (shoppingList.getAlarmDate() != null) {
@@ -351,11 +361,18 @@ public class ShoppingListItemActivity extends ActionBarActivity
         if (shoppingList.getTags() != null && !shoppingList.getTags().isEmpty()) {
             for (int i = 0; i < shoppingList.getTags().size(); i++) {
                 TextView tag = new TextView(mActivity);
-                tag.setBackground(getResources().getDrawable(R.drawable.tag_background_white));
+                GradientDrawable box = (GradientDrawable) getResources().getDrawable(R.drawable.tag_background_white);
+//                box.setColorFilter(shoppingList.getColor(), PorterDuff.Mode.OVERLAY);
+                box.setColor(shoppingList.getColor());
+                tag.setBackground(box);
+
+//                GradientDrawable shape = (GradientDrawable) tag.getBackground();
+//                shape.setColor(shoppingList.getColor());
+//                tag.setBackgroundColor(shoppingList.getColor());
 
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-                lp.setMargins(5, 0, 5, 0);
+                lp.setMargins(10, 0, 10, 0);
                 tag.setLayoutParams(lp);
 
                 tag.setText(shoppingList.getTags().get(i));
@@ -383,7 +400,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //            }
             CheckBoxView item = new CheckBoxView(mActivity, listItems.get(i), shoppingList.getType(), shoppingList.getColor(), unchecked, progressBar, progressBarLabel);
             unchecked.addView(item);
-            if(listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal())
+            if (listItems.get(i).isChecked() == ListItemModel.ListItemState.Checked.ordinal())
                 progress++;
         }
         Formater.updateProgress(listItems.size(), progress, progressBar, progressBarLabel);
@@ -409,13 +426,16 @@ public class ShoppingListItemActivity extends ActionBarActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.shopping_list_fragment_menu, menu);
-        if (shoppingList.getType() == ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal()) {
-            menu.findItem(R.id.showCheckBoxes).setVisible(true);
-            menu.findItem(R.id.hideCheckBoxes).setVisible(false);
-        } else {
-            menu.findItem(R.id.showCheckBoxes).setVisible(false);
-            menu.findItem(R.id.hideCheckBoxes).setVisible(true);
-        }
+        /**
+         * Droebit vakomentarebit
+         */
+//        if (shoppingList.getType() == ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal()) {
+//            menu.findItem(R.id.showCheckBoxes).setVisible(true);
+//            menu.findItem(R.id.hideCheckBoxes).setVisible(false);
+//        } else {
+//            menu.findItem(R.id.showCheckBoxes).setVisible(false);
+//            menu.findItem(R.id.hideCheckBoxes).setVisible(true);
+//        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -455,27 +475,30 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 Toast.makeText(mActivity, "????????", Toast.LENGTH_LONG).show();
 
                 return true;
-            case R.id.showCheckBoxes:
-                shoppingList.setType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
-                changeShoppingListType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
-                return true;
-            case R.id.hideCheckBoxes:
-                shoppingList.setType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
-                boolean shouldShowDialog = false;
-                for(int i = 0; i < uncheckedContainer.getChildCount(); i++){
-                    CheckBoxView cbv = (CheckBoxView) uncheckedContainer.getChildAt(i);
-                    if(cbv.getIsChecked() == ListItemModel.ListItemState.Checked.ordinal()){
-                        shouldShowDialog = true;
-                        break;
-                    }
-                }
-                if (shouldShowDialog) {
-                    ShoppingListChangeTypeDialog dialog = new ShoppingListChangeTypeDialog();
-//                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
-                    dialog.show(getSupportFragmentManager(), "ShoppingListChangeTypeDialog");
-                } else
-                    changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
-                return true;
+            /**
+             * Droebit Vakomentarebt
+             */
+//            case R.id.showCheckBoxes:
+//                shoppingList.setType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
+//                changeShoppingListType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
+//                return true;
+//            case R.id.hideCheckBoxes:
+//                shoppingList.setType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+//                boolean shouldShowDialog = false;
+//                for (int i = 0; i < uncheckedContainer.getChildCount(); i++) {
+//                    CheckBoxView cbv = (CheckBoxView) uncheckedContainer.getChildAt(i);
+//                    if (cbv.getIsChecked() == ListItemModel.ListItemState.Checked.ordinal()) {
+//                        shouldShowDialog = true;
+//                        break;
+//                    }
+//                }
+//                if (shouldShowDialog) {
+//                    ShoppingListChangeTypeDialog dialog = new ShoppingListChangeTypeDialog();
+////                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
+//                    dialog.show(getSupportFragmentManager(), "ShoppingListChangeTypeDialog");
+//                } else
+//                    changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+//                return true;
             case R.id.addTags:
                 Intent tagsIntent = new Intent(this, TagsActivity.class);
                 Bundle extras = new Bundle();
@@ -1068,9 +1091,15 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
     private void changeListColor(int color) {
         cardView.setBackgroundColor(color);
-        for(int i = 0; i < uncheckedContainer.getChildCount(); i++){
+        for (int i = 0; i < uncheckedContainer.getChildCount(); i++) {
             CheckBoxView cbv = (CheckBoxView) uncheckedContainer.getChildAt(i);
             cbv.setColor(color);
+        }
+
+        for (int i = 0; i < tagsContainer.getChildCount(); i++) {
+            TextView tag = (TextView) tagsContainer.getChildAt(i);
+            GradientDrawable shape = (GradientDrawable) tag.getBackground();
+            shape.setColor(shoppingList.getColor());
         }
     }
 
@@ -1100,7 +1129,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
             }
             for (int i = 0; i < uncheckedContainer.getChildCount(); i++) {
                 CheckBoxView checkedItem = (CheckBoxView) uncheckedContainer.getChildAt(i);
-                if(checkedItem.getIsChecked() == ListItemModel.ListItemState.Checked.ordinal())
+                if (checkedItem.getIsChecked() == ListItemModel.ListItemState.Checked.ordinal())
                     checkedItem.setChecked(ListItemModel.ListItemState.UnChecked.ordinal());
             }
 //            for (int i = 0; i < checkedContainer.getChildCount(); i++) {
@@ -1132,17 +1161,17 @@ public class ShoppingListItemActivity extends ActionBarActivity
         updateMap(new LocationModel(41.806363, 44.768531, "Agmasheneblis Xeivani"));
     }
 
-    private void updateMap(LocationModel location){
-        if(mMap != null){
+    private void updateMap(LocationModel location) {
+        if (mMap != null) {
             locationPinAddressLabel.setText(location.getAddress());
             LatLng place = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.animateCamera(CameraUpdateFactory.newLatLng(place));
-    //        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            //        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_marker_icon))
                     .position(place)
                     .anchor(0.5f, 0.5f));
-    //        marker.showInfoWindow();
+            //        marker.showInfoWindow();
             mCurrentMarker = marker;
         }
     }

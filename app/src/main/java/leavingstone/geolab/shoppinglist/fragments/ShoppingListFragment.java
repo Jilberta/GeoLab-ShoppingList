@@ -119,13 +119,13 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.shopping_list_fragment_menu, menu);
-        if (shoppingList.getType() == ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal()) {
-            menu.findItem(R.id.showCheckBoxes).setVisible(true);
-            menu.findItem(R.id.hideCheckBoxes).setVisible(false);
-        } else {
-            menu.findItem(R.id.showCheckBoxes).setVisible(false);
-            menu.findItem(R.id.hideCheckBoxes).setVisible(true);
-        }
+//        if (shoppingList.getType() == ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal()) {
+//            menu.findItem(R.id.showCheckBoxes).setVisible(true);
+//            menu.findItem(R.id.hideCheckBoxes).setVisible(false);
+//        } else {
+//            menu.findItem(R.id.showCheckBoxes).setVisible(false);
+//            menu.findItem(R.id.hideCheckBoxes).setVisible(true);
+//        }
     }
 
     @Override
@@ -159,19 +159,19 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
 //                Toast.makeText(getActivity(), "????????", Toast.LENGTH_LONG).show();
 
                 return true;
-            case R.id.showCheckBoxes:
-                shoppingList.setType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
-                changeShoppingListType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
-                return true;
-            case R.id.hideCheckBoxes:
-                shoppingList.setType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
-                if (checkedContainer.getChildCount() != 0) {
-                    ShoppingListChangeTypeDialog dialog = new ShoppingListChangeTypeDialog();
-                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
-                    dialog.show(getFragmentManager(), "ShoppingListChangeTypeDialog");
-                } else
-                    changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
-                return true;
+//            case R.id.showCheckBoxes:
+//                shoppingList.setType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
+//                changeShoppingListType(ShoppingListModel.ShoppingListType.WithCheckboxes.ordinal());
+//                return true;
+//            case R.id.hideCheckBoxes:
+//                shoppingList.setType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+//                if (checkedContainer.getChildCount() != 0) {
+//                    ShoppingListChangeTypeDialog dialog = new ShoppingListChangeTypeDialog();
+//                    dialog.setTargetFragment(this, DIALOG_FRAGMENT);
+//                    dialog.show(getFragmentManager(), "ShoppingListChangeTypeDialog");
+//                } else
+//                    changeShoppingListType(ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal());
+//                return true;
             case R.id.addTags:
 //                TagsFragment tagsFragment = TagsFragment.newInstance();
 //                Bundle extras = new Bundle();

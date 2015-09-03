@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="default_color_choice_values" translatable="false">
-        <item>#cccccc</item>
-        <item>#ff4444</item>
-        <item>#ff8800</item>
-        <item>#ffbb33</item>
-        <item>#888888</item>
-        <item>#33b5e5</item>
-        <item>#99cc00</item>
+        <!--<item>#cccccc</item>-->
+        <!--<item>#ff4444</item>-->
+        <!--<item>#ff8800</item>-->
+        <!--<item>#ffbb33</item>-->
+        <!--<item>#888888</item>-->
+        <!--<item>#33b5e5</item>-->
+        <!--<item>#99cc00</item>-->
+        <!--<item>#9933cc</item>-->
+        <item>#ffffff</item>
+        <item>#ff7474</item>
+        <item>#ff80ab</item>
+        <item>#ffd740</item>
+        <item>#cfd8dc</item>
+        <item>#64b5f6</item>
+        <item>#00e676</item>
         <item>#9933cc</item>
-        <!--<item>#aa66cc</item>-->
-        <!--<item>#0099cc</item>-->
-        <!--<item>#669900</item>-->
-        <!--<item>#cc0000</item>-->
-        <!--<item>#ffffff</item>-->
-        <!--<item>#eeeeee</item>-->
+    </string-array>
+
+    <string-array name="secondary_color_choice_values" translatable="false">
+        <item>#a0b8cf</item>
+        <item>#ff5252</item>
+        <item>#ed5f8f</item>
+        <item>#fbc02d</item>
+        <item>#90a4ae</item>
+        <item>#42a5f5</item>
+        <item>#15c56f</item>
+        <item>#652d8a</item>
     </string-array>
 </resources>
