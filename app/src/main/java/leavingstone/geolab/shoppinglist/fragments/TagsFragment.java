@@ -94,6 +94,7 @@ public class TagsFragment extends Fragment {
         MenuItem item = menu.findItem(R.id.search);
 //        item.expandActionView();
         searchView = (SearchView) item.getActionView();
+        searchView.setIconified(false);
 
 //        LinearLayout searchBar = (LinearLayout) searchView.findViewById(R.id.search_bar);
 //        searchBar.setLayoutTransition(new LayoutTransition());

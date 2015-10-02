@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:rv_type="rectangle"
-            app:rv_rippleDuration="200">
+            app:rv_rippleDuration="140">
 
             <LinearLayout
                 android:layout_width="match_parent"

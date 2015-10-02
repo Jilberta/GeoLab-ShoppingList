@@ -11,13 +11,22 @@
             android:title="Reminders" />
     </group>
 
-    <item android:title="Labels">
-        <menu>
-            <item
-                android:title="Label 1" />
-            <item
-                android:title="Label 2" />
-        </menu>
-    </item>
+
+    <group
+        android:id="@+id/about"
+        android:checkableBehavior="single">
+
+        <item android:title="About Us">
+
+        </item>
+    </group>
+
+    <group
+        android:id="@+id/labels"
+        android:checkableBehavior="single">
+        <item android:title="Labels"
+            android:id="@+id/label_container">
+        </item>
+    </group>
 
 </menu>

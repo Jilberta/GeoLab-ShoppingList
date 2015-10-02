@@ -17,6 +17,9 @@
 
     <string name="shopping_list_fragment">SHOPPINGLIST_DETAILS</string>
 
+    <!-- MainActivity -->
+    <string name="search_hint">"ძებნა..."</string>
+
 
 
     <!-- Location Services -->
@@ -70,14 +73,16 @@
     <string name="menu_search">ძებნა</string>
 
     <string-array name="list_colors" translatable="false">
-        <item>#ffffff</item>
-        <item>#ff7474</item>
-        <item>#ff80ab</item>
-        <item>#ffd740</item>
+        <!--<item>#ffffff</item>-->
         <item>#cfd8dc</item>
+        <item>#ff7474</item>
+        <item>#ffd740</item>
+        <item>#ff80ab</item>
+        <item>#ff7043</item>
         <item>#64b5f6</item>
         <item>#00e676</item>
-        <item>#9933cc</item>
+        <item>#8c64d0</item>
+        <!--<item>#9933cc</item>-->
         <!--<item>#cccccc</item>-->
         <!--<item>#ff4444</item>-->
         <!--<item>#ff8800</item>-->
@@ -94,6 +99,7 @@
     <!-- ShoppingList Activity -->
     <string name="date_reminder_text">Remind Me</string>
     <string name="title_activity_tags">TagsActivity</string>
+    <string name="location_reminder_text">Choose Place</string>
 
     
     <!-- Tags Activity -->

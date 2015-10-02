@@ -1,6 +1,7 @@
 package leavingstone.geolab.shoppinglist.locations;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
+import leavingstone.geolab.shoppinglist.activities.ShoppingListItemActivity;
 import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
@@ -126,7 +128,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
      */
     private void sendNotification(long shoppingListId) {
         // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), ShoppingListItemActivity.class);
         notificationIntent.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingListId);
         notificationIntent.setAction(getString(R.string.shopping_list_fragment));
         try {
@@ -141,7 +143,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
         // Add the main Activity to the task stack as the parent.
-//        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(MainActivity.class);
 
         // Push the content Intent onto the stack.
         stackBuilder.addNextIntent(notificationIntent);
@@ -156,14 +158,15 @@ public class GeofenceTransitionsIntentService extends IntentService {
         String notificationTitle = shoppingList.getTitle();
         String notificationContent = "Reminder at: " + shoppingList.getLocationReminder().getAddress();
         // Define the notification settings.
-        builder.setSmallIcon(R.drawable.ic_drawer)
+        builder.setSmallIcon(R.drawable.pin_marker_icon)
                 // In a real app, you may want to use a library like Volley
                 // to decode the Bitmap.
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.drawable.ic_drawer))
+                        R.drawable.pin_marker_icon))
                 .setColor(Color.RED)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationContent)
+                .setDefaults(Notification.DEFAULT_ALL)
                 .setContentIntent(notificationPendingIntent);
 
         // Dismiss notification once the user touches it.

@@ -49,6 +49,6 @@ public class ListItemsUpdater extends AsyncTask {
 
     @Override
     protected void onPostExecute(Object o) {
-        Toast.makeText(context, "DaaUpdata", Toast.LENGTH_LONG).show();
+//        Toast.makeText(context, "DaaUpdata", Toast.LENGTH_LONG).show();
     }
 }

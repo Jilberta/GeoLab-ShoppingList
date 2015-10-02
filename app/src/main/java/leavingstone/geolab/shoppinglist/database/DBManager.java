@@ -67,7 +67,7 @@ public class DBManager {
 
     public static ArrayList<ShoppingListModel> getShoppingList(String whereQuery){
         ArrayList<ShoppingListModel> shoppingList = new ArrayList<>();
-        Cursor cursor = db.query(DBHelper.SHOPPING_LIST_TABLE, null, whereQuery, null, null, null, DBHelper.SHOPPING_LIST_DATE + " DESC");
+        Cursor cursor = db.query(DBHelper.SHOPPING_LIST_TABLE, null, whereQuery, null, null, null, DBHelper.SHOPPING_LIST_DATE + " ASC");
         if(cursor.moveToFirst()){
             do {
                 long id = cursor.getLong(cursor.getColumnIndex(DBHelper.SHOPPING_LIST_ID));

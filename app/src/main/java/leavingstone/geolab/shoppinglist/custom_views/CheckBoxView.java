@@ -37,8 +37,8 @@ public class CheckBoxView extends LinearLayout implements ListItemView {
     private CheckBox checkBox;
     private EditText editText;
     private TextView orderView;
-    private Button removeBtn;
-//    private ImageButton removeBtn;
+//    private Button removeBtn;
+    private ImageButton removeBtn;
 
     private int listColor;
     private int listType = ShoppingListModel.ShoppingListType.WithoutCheckboxes.ordinal();
@@ -66,8 +66,8 @@ public class CheckBoxView extends LinearLayout implements ListItemView {
         checkBox = (CheckBox) parentView.findViewById(R.id.checkBox);
         editText = (EditText) parentView.findViewById(R.id.text);
         orderView = (TextView) parentView.findViewById(R.id.order_view);
-        removeBtn = (Button) parentView.findViewById(R.id.removeBtn);
-//        removeBtn = (ImageButton) parentView.findViewById(R.id.removeBtn);
+//        removeBtn = (Button) parentView.findViewById(R.id.removeBtn);
+        removeBtn = (ImageButton) parentView.findViewById(R.id.removeBtn);
 
 //        removeBtn.setColorFilter(Color.RED);
 

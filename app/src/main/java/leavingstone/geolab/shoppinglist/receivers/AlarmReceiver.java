@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
+import leavingstone.geolab.shoppinglist.activities.ShoppingListItemActivity;
 import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
@@ -23,7 +24,8 @@ import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        String reminderTitle = "";
+        String reminderText = "";
         ShoppingListModel shoppingList = null;
         if (intent.getExtras() != null) {
             long shoppingListId = intent.getExtras().getLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY);
@@ -35,21 +37,26 @@ public class AlarmReceiver extends BroadcastReceiver {
             ArrayList<ShoppingListModel> list = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_ID + " = " + shoppingListId);
             shoppingList = list.get(0);
             System.out.println(shoppingList);
-            shoppingList.setAlarmDate(null);
 
+            reminderTitle = shoppingList.getTitle();
+            reminderText = "Reminder At: " + shoppingList.getAlarmDate();
+
+            shoppingList.setAlarmDate(null);
             DBManager.updateShoppingList(shoppingList);
         }
 
+
         Notification.Builder nBuilder = new Notification.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Alarm Notification")
-                .setContentText("Reminding Your Reminder");
+                .setSmallIcon(R.drawable.alarm_icon)
+                .setContentTitle(reminderTitle)
+                .setContentText(reminderText)
+                .setDefaults(Notification.DEFAULT_ALL);
         nBuilder.setAutoCancel(true);
 
         Intent resultIntent;
         int notificationId = 1;
         if (shoppingList != null) {
-            resultIntent = new Intent(context, MainActivity.class);
+            resultIntent = new Intent(context, ShoppingListItemActivity.class);
             resultIntent.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList.getId());
             notificationId = (int) shoppingList.getId();
         } else {
@@ -58,7 +65,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         resultIntent.setAction(context.getString(R.string.shopping_list_fragment));
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-//        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         nBuilder.setContentIntent(resultPendingIntent);
