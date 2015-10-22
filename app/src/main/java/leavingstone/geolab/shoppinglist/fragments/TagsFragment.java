@@ -1,12 +1,13 @@
 package leavingstone.geolab.shoppinglist.fragments;
 
 import android.animation.LayoutTransition;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.widget.Button;
+import android.support.v7.widget.SearchView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
 import leavingstone.geolab.shoppinglist.adapters.TagsListAdapter;
 import leavingstone.geolab.shoppinglist.async.ListItemsUpdater;
@@ -96,11 +98,18 @@ public class TagsFragment extends Fragment {
         searchView = (SearchView) item.getActionView();
         searchView.setIconified(false);
 
+        ImageView searchViewClose = (ImageView) searchView.findViewById(R.id.search_close_btn);
+        searchViewClose.setVisibility(View.GONE);
+
+        ImageView magImage = (ImageView) searchView.findViewById(R.id.search_button);
+        magImage.setVisibility(View.GONE);
+//        magImage.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
+
 //        LinearLayout searchBar = (LinearLayout) searchView.findViewById(R.id.search_bar);
 //        searchBar.setLayoutTransition(new LayoutTransition());
 //        searchView.setIconified(true);
 //        searchView.onActionViewCollapsed();
-        searchView.setQueryHint("Add Tag");
+        searchView.setQueryHint("თეგის დამატება");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -202,4 +211,5 @@ public class TagsFragment extends Fragment {
         super.onPause();
         new ListItemsUpdater(getActivity()).execute(shoppingList, null);
     }
+    
 }

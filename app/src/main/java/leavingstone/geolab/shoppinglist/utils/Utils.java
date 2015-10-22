@@ -22,8 +22,11 @@ public class Utils {
         ShapeDrawable.ShaderFactory sf = new ShapeDrawable.ShaderFactory() {
             @Override
             public Shader resize(int width, int height) {
+//                return new LinearGradient(0, 0, 0, height,
+//                        new int[]{gradientColor, color, color, gradientColor},
+//                        new float[]{0, 0.02f, 0.92f, 1}, Shader.TileMode.MIRROR);
                 return new LinearGradient(0, 0, 0, height,
-                        new int[]{gradientColor, color, color, gradientColor},
+                        new int[]{color, color, color, color},
                         new float[]{0, 0.02f, 0.92f, 1}, Shader.TileMode.MIRROR);
             }
         };

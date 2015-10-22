@@ -1,32 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="single">
         <item
-            android:id="@+id/navigation_item_attachment"
+            android:id="@+id/navigation_item_notes"
+            android:icon="@drawable/drawer_event_note_icon"
             android:checked="true"
-            android:title="Notes" />
+            android:title="@string/drawer_notes" />
         <item
-            android:id="@+id/navigation_item_images"
-            android:title="Reminders" />
+            android:id="@+id/navigation_item_reminders"
+            android:icon="@drawable/drawer_reminders_icon"
+            android:checked="false"
+            android:title="@string/drawer_reminders" />
     </group>
 
+    <!--<group-->
+        <!--android:id="@+id/about"-->
+        <!--android:checkableBehavior="single">-->
 
-    <group
-        android:id="@+id/about"
-        android:checkableBehavior="single">
+        <!--<item-->
+            <!--android:id="@+id/navigation_item_about_us"-->
+            <!--android:checked="false"-->
+            <!--android:title="@string/drawer_about_us" />-->
+    <!--</group>-->
 
-        <item android:title="About Us">
-
-        </item>
-    </group>
-
-    <group
-        android:id="@+id/labels"
-        android:checkableBehavior="single">
-        <item android:title="Labels"
-            android:id="@+id/label_container">
-        </item>
-    </group>
+    <!--<group-->
+        <!--android:id="@+id/labels"-->
+        <!--android:checkableBehavior="single">-->
+        <!--<item-->
+            <!--android:id="@+id/label_container"-->
+            <!--android:title="@string/drawer_tags"></item>-->
+    <!--</group>-->
+    <item android:title="@string/drawer_tags"
+        android:id="@+id/labels">
+    </item>
 
 </menu>

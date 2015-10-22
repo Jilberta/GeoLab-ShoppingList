@@ -29,7 +29,8 @@ public class ListColorDialog extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentColor = getArguments().getInt("Color");
+        if(getArguments() != null)
+            currentColor = getArguments().getInt("Color");
     }
 
     @Override

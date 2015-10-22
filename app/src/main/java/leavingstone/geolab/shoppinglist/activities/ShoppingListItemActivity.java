@@ -7,30 +7,23 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -51,11 +44,11 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
@@ -65,7 +58,6 @@ import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.fragments.ListColorDialog;
 import leavingstone.geolab.shoppinglist.fragments.ShoppingListChangeTypeDialog;
-import leavingstone.geolab.shoppinglist.fragments.TagsFragment;
 import leavingstone.geolab.shoppinglist.locations.GeofenceConstants;
 import leavingstone.geolab.shoppinglist.locations.GeofenceErrorMessages;
 import leavingstone.geolab.shoppinglist.locations.GeofenceTransitionsIntentService;
@@ -74,6 +66,7 @@ import leavingstone.geolab.shoppinglist.model.LocationModel;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 import leavingstone.geolab.shoppinglist.receivers.AlarmReceiver;
 import leavingstone.geolab.shoppinglist.utils.Formater;
+import leavingstone.geolab.shoppinglist.utils.GlobalConsts;
 import leavingstone.geolab.shoppinglist.utils.Utils;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
@@ -89,6 +82,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
+import com.wefika.flowlayout.FlowLayout;
 
 /**
  * Created by Jay on 3/28/2015.
@@ -108,7 +102,8 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
     private ShoppingListModel shoppingList;
     private ArrayList<ListItemModel> listItems;
-    private LinearLayout checkedContainer, uncheckedContainer, tagsContainer, dateReminder;
+    private LinearLayout checkedContainer, uncheckedContainer, dateReminder; //  tagsContainer,
+    private com.wefika.flowlayout.FlowLayout tagsContainer;
     private CardView cardView;
     private EditText titleView;
     private RelativeLayout locationPin, reminderPin;
@@ -137,14 +132,22 @@ public class ShoppingListItemActivity extends ActionBarActivity
     }
 
     @Override
+    public void onBackPressed() {
+        Intent backtoHome = new Intent(this, MainActivity.class);
+        backtoHome.addCategory(Intent.CATEGORY_HOME);
+        backtoHome.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(backtoHome);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list_item_activity);
 //        setContentView(R.layout.shopping_list_fragment);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupWindowAnimations();
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            setupWindowAnimations();
+//        }
 
         mActivity = this;
 
@@ -157,6 +160,12 @@ public class ShoppingListItemActivity extends ActionBarActivity
         if (getIntent().getExtras() != null) {
             long id = getIntent().getExtras().getLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY);
             shoppingList = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_ID + " = " + id).get(0);
+            boolean fromAlarm = getIntent().getExtras().getBoolean(GlobalConsts.FROM_ALARM_KEY, false);
+            if (fromAlarm)
+                shoppingList.setAlarmDate(null);
+            boolean fromLocation = getIntent().getExtras().getBoolean(GlobalConsts.FROM_LOCATION_KEY, false);
+            if (fromLocation)
+                shoppingList.setLocationReminder(null);
             System.out.println(shoppingList);
         }
 
@@ -169,7 +178,8 @@ public class ShoppingListItemActivity extends ActionBarActivity
         cardView = (CardView) findViewById(R.id.card_view);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBarLabel = (TextView) findViewById(R.id.progress_percentage_label);
-        tagsContainer = (LinearLayout) findViewById(R.id.tags);
+//        tagsContainer = (LinearLayout) findViewById(R.id.tags);
+        tagsContainer = (com.wefika.flowlayout.FlowLayout) findViewById(R.id.tags);
 
 //        orderContainer = (LinearLayout) findViewById(R.id.order_container);
         uncheckedContainer = (LinearLayout) findViewById(R.id.unchecked_container);
@@ -207,7 +217,6 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
 
         titleView = (EditText) findViewById(R.id.listTitle);
-
 
         loadShoppingList();
 
@@ -280,9 +289,9 @@ public class ShoppingListItemActivity extends ActionBarActivity
         if (shoppingList.getTitle() != null)
             titleView.setText(shoppingList.getTitle());
 
-        if (shoppingList.getColor() == 0){
+        if (shoppingList.getColor() == 0) {
 //            shoppingList.setColor(-1);
-            String [] colors = getResources().getStringArray(R.array.list_colors);
+            String[] colors = getResources().getStringArray(R.array.list_colors);
             shoppingList.setColor(Color.parseColor(colors[0]));
         }
         changeListColor(shoppingList.getColor());
@@ -292,7 +301,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
         }
 
         /**
-           onMapReady Callback-shia gadatanili
+         onMapReady Callback-shia gadatanili
          */
 //        if (shoppingList.getLocationReminder() != null) {
 //            updateMap(shoppingList.getLocationReminder());
@@ -310,9 +319,12 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //                shape.setColor(shoppingList.getColor());
 //                tag.setBackgroundColor(shoppingList.getColor());
 
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-                lp.setMargins(10, 0, 10, 0);
+
+                FlowLayout.LayoutParams lp = new FlowLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                lp.setMargins(10, 10, 10, 10);
                 tag.setLayoutParams(lp);
 
                 tag.setPadding(12, 0, 12, 0);
@@ -385,9 +397,12 @@ public class ShoppingListItemActivity extends ActionBarActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case android.R.id.home:
-//                NavUtils.navigateUpFromSameTask(getActivity());
-//                return true;
+            case android.R.id.home:
+                Intent backtoHome = new Intent(this, MainActivity.class);
+                backtoHome.addCategory(Intent.CATEGORY_HOME);
+                backtoHome.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(backtoHome);
+                return true;
             case R.id.listColor:
                 ListColorDialog colorDialog = new ListColorDialog();
                 Bundle bundle = new Bundle();
@@ -477,7 +492,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
         alarmDate.set(Calendar.YEAR, year);
         alarmDate.set(Calendar.MONTH, month);
         alarmDate.set(Calendar.DAY_OF_MONTH, day);
-        Toast.makeText(mActivity, "new date:" + year + "-" + month + "-" + day + " : " + alarmDate.get(Calendar.YEAR) + "-" + alarmDate.get(Calendar.MONTH) + "-" + alarmDate.get(Calendar.DAY_OF_MONTH), Toast.LENGTH_LONG).show();
+//        Toast.makeText(mActivity, "new date:" + year + "-" + month + "-" + day + " : " + alarmDate.get(Calendar.YEAR) + "-" + alarmDate.get(Calendar.MONTH) + "-" + alarmDate.get(Calendar.DAY_OF_MONTH), Toast.LENGTH_LONG).show();
 
 
         Calendar calendar = Calendar.getInstance();
@@ -495,7 +510,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
 
 //        Toast.makeText(getActivity(), alarmDate.get(Calendar.DAY_OF_MONTH) + " " + alarmDate.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + alarmDate.get(Calendar.HOUR) + ":" + alarmDate.get(Calendar.MINUTE), Toast.LENGTH_LONG).show();
 
-        String reminderPinText = new SimpleDateFormat("dd MMMM HH:mm").format(alarmDate.getTime());
+        String reminderPinText = new SimpleDateFormat("dd MMMM HH:mm", new Locale("ka")).format(alarmDate.getTime());
         Toast.makeText(mActivity, reminderPinText, Toast.LENGTH_LONG).show();
 
 //        reminderPin.setVisibility(View.VISIBLE);
@@ -518,7 +533,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
                 if (resultCode == Activity.RESULT_OK) {
                     Place place = PlacePicker.getPlace(data, mActivity);
                     String toastMsg = String.format("Place: %s", place.getName() + " Adress: " + place.getAddress() + " Lat: " + place.getLatLng().latitude + " Long: " + place.getLatLng().longitude);
-                    Toast.makeText(mActivity, toastMsg, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(mActivity, toastMsg, Toast.LENGTH_LONG).show();
 
                     mCurrentLocation = new Location("");
                     mCurrentLocation.setLongitude(place.getLatLng().longitude);
@@ -558,6 +573,8 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //                    locationPin.setVisibility(View.VISIBLE);
 
                     updateMap(locationModel);
+
+                    Toast.makeText(mActivity, locationModel.getAddress(), Toast.LENGTH_LONG).show();
 
 
                     //   startUpdatesButtonHandler();
@@ -787,6 +804,7 @@ public class ShoppingListItemActivity extends ActionBarActivity
         if (mGoogleApiClient.isConnected()) {
             stopLocationUpdates();
         }
+        overridePendingTransition(R.anim.activity_open_scale, R.anim.activity_close_translate);
     }
 
     @Override
@@ -1044,6 +1062,11 @@ public class ShoppingListItemActivity extends ActionBarActivity
             GradientDrawable shape = (GradientDrawable) tag.getBackground();
             shape.setColor(shoppingList.getColor());
         }
+
+        TextView dumbOrderView = (TextView) cardView.findViewById(R.id.dumb_order_view);
+        LinearLayout dumbItemView = (LinearLayout) cardView.findViewById(R.id.dumb_item_container);
+        dumbOrderView.setBackgroundColor(Formater.getDarkerColor(color));
+        dumbItemView.setBackgroundColor(color);
     }
 
     @Override
@@ -1102,23 +1125,30 @@ public class ShoppingListItemActivity extends ActionBarActivity
 //        mCurrentMarker = marker;
         mMap = googleMap;
 //        updateMap(new LocationModel(41.806363, 44.768531, "Agmasheneblis Xeivani"));
-        if(shoppingList.getLocationReminder() != null){
+        if (shoppingList.getLocationReminder() != null) {
             updateMap(shoppingList.getLocationReminder());
+        } else {
+            updateMap(null);
         }
     }
 
     private void updateMap(LocationModel location) {
         if (mMap != null) {
-            locationPinAddressLabel.setText(location.getAddress());
-            LatLng place = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(place));
-            //        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_marker_icon))
-                    .position(place)
-                    .anchor(0.5f, 0.5f));
-            //        marker.showInfoWindow();
-            mCurrentMarker = marker;
+            mMap.clear();
+            if (location == null) {
+                locationPinAddressLabel.setText(getResources().getString(R.string.location_reminder_text));
+            } else {
+                locationPinAddressLabel.setText(location.getAddress());
+                LatLng place = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(place));
+                //        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_marker_icon))
+                        .position(place)
+                        .anchor(0.5f, 0.5f));
+                //        marker.showInfoWindow();
+                mCurrentMarker = marker;
+            }
         }
     }
 }

@@ -220,5 +220,6 @@ public class CheckBoxView extends LinearLayout implements ListItemView {
     public void setColor(int color) {
         itemContainer.setBackgroundColor(color);
         orderView.setBackgroundColor(Formater.getDarkerColor(color));
+        removeBtn.setColorFilter(Formater.getDarkerColor(color));
     }
 }

@@ -1,5 +1,6 @@
 package leavingstone.geolab.shoppinglist.adapters;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ public class TagsListAdapter extends BaseAdapter implements Filterable {
     private ArrayList<String> filteredTagsList;
     private TagsFilter tagsFilter;
     private Context context;
+    private int previousPosition;
 
     public TagsListAdapter(Context context, ShoppingListModel shoppingList){
         this.context = context;
@@ -85,8 +87,26 @@ public class TagsListAdapter extends BaseAdapter implements Filterable {
             }
         });
 
-        Animation animation = AnimationUtils.loadAnimation(context, R.anim.show_from_bottom);
-        convertView.startAnimation(animation);
+//        Animation animation;
+//        if(position > previousPosition){
+//            animation = AnimationUtils.loadAnimation(context, R.anim.tags_bottom_up);
+//        } else {
+//            animation = AnimationUtils.loadAnimation(context, R.anim.tags_bottom_down);
+//        }
+//        convertView.startAnimation(animation);
+//        previousPosition = position;
+
+        ObjectAnimator animatorTranslateY;
+        if(position > previousPosition){
+            animatorTranslateY = ObjectAnimator.ofFloat(convertView, "translationY", 200, 0);
+            animatorTranslateY.setDuration(500);
+            animatorTranslateY.start();
+        } else {
+            animatorTranslateY = ObjectAnimator.ofFloat(convertView, "translationY", -200, 0);
+            animatorTranslateY.setDuration(500);
+            animatorTranslateY.start();
+        }
+        previousPosition = position;
 
         return convertView;
     }

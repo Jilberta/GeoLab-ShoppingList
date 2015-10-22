@@ -3,6 +3,7 @@ package leavingstone.geolab.shoppinglist;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.support.v7.widget.SearchView;
@@ -35,21 +37,27 @@ import leavingstone.geolab.shoppinglist.activities.ShoppingListItemActivity;
 import leavingstone.geolab.shoppinglist.adapters.RecyclerAdapter;
 import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
+import leavingstone.geolab.shoppinglist.fragments.ListColorDialog;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
 import leavingstone.geolab.shoppinglist.utils.Utils;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ListColorDialog.ListColorDialogListener {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private Activity mActivity;
+    private int mScrollOffset = 4;
+    private RecyclerView recyclerView;
 
     private Toolbar toolbar, toolbar2;
     private TextView toolbarTitle;
     private LinearLayout filterTab;
-    private Activity mActivity;
-    private int mScrollOffset = 4;
-    private RecyclerView recyclerView;
+    private ImageButton filterTimeReminder, filterLocationReminder, filterColorNotes, filterShareNote;
+    private SearchView searchView;
+    private boolean filterTimeReminderIsPressed = false, filterLocationReminderIsPressed = false,
+            filterSharedNotesIsPressed = false, filterColorNotesIsPressed = false;
+    private int filterChosenColor;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setUpAnimation(){
@@ -67,9 +75,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setUpAnimation();
-        }
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            setUpAnimation();
+//        }
 
         mActivity = this;
 
@@ -82,7 +90,7 @@ public class MainActivity extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar2 = (Toolbar) findViewById(R.id.toolbar2);
         toolbar2.inflateMenu(R.menu.search_menu);
-        final SearchView searchView = (SearchView)toolbar2.findViewById(R.id.action_search);
+        searchView = (SearchView)toolbar2.findViewById(R.id.action_search);
         searchView.setIconified(false);
         final ImageView searchViewClose = (ImageView) searchView.findViewById(R.id.search_close_btn);
         searchViewClose.setVisibility(View.GONE);
@@ -93,6 +101,7 @@ public class MainActivity extends ActionBarActivity {
                 searchViewClose.setVisibility(View.GONE);
             }
         });
+        searchView.clearFocus();
 
 
         toolbar2.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -102,11 +111,16 @@ public class MainActivity extends ActionBarActivity {
                 toolbar.setVisibility(View.VISIBLE);
                 toolbar2.setVisibility(View.GONE);
                 filterTab.setVisibility(View.GONE);
-                searchView.setQuery("", false);
+//                searchView.setQuery("", false);
+                closeSearchTab();
             }
         });
         toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
         filterTab = (LinearLayout) findViewById(R.id.filter_tool);
+        filterTimeReminder = (ImageButton) filterTab.findViewById(R.id.time_reminder_notes);
+        filterLocationReminder = (ImageButton) filterTab.findViewById(R.id.location_reminder_notes);
+        filterColorNotes = (ImageButton) filterTab.findViewById(R.id.color_notes);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 //        ActionBar actionbar = getSupportActionBar();
@@ -127,6 +141,40 @@ public class MainActivity extends ActionBarActivity {
         for(int i = 0; i < tags.size(); i++) {
             navigationView.getMenu().add(R.id.labels, Menu.NONE, i, tags.get(i)).setIcon(R.drawable.ic_label_black_24dp).setCheckable(true);
         }
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                if(menuItem.isChecked())
+                    menuItem.setChecked(false);
+                else
+                    menuItem.setChecked(true);
+
+                //Closing drawer on item click
+                mDrawerLayout.closeDrawers();
+
+                if(menuItem.getItemId() == R.id.navigation_item_notes){
+                    closeSearchTab();
+                    return true;
+                } else if (menuItem.getItemId() == R.id.navigation_item_reminders){
+                    getRemindersList();
+                    return true;
+                }
+//                else if (menuItem.getItemId() == R.id.navigation_item_about_us){
+//                    System.out.println();
+//                    return true;
+//                }
+                else {
+                    if(menuItem.getItemId() == Menu.NONE){
+                        String title = (String) menuItem.getTitle();
+                        getTaggedNotes(title);
+                    }
+                    return true;
+                }
+            }
+        });
+
 
         FrameLayout container = (FrameLayout) findViewById(R.id.container);
         Utils.makeGradientBackground(container, getResources());
@@ -155,6 +203,8 @@ public class MainActivity extends ActionBarActivity {
                 extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingListModel.getId());
                 shoppingList.putExtras(extras);
                 startActivity(shoppingList);
+
+                overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
             }
         });
 
@@ -182,24 +232,62 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                //adapter.getFilter().filter(newText);
+                getFilteredList(newText);
                 return true;
             }
         });
 
-        filterTab.findViewById(R.id.time_reminder_notes).setOnClickListener(new View.OnClickListener() {
+        filterTimeReminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<ShoppingListModel> list = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_ALARMDATE + " IS NOT NULL");
-                ((RecyclerAdapter) recyclerView.getAdapter()).setData(list);
+//                ArrayList<ShoppingListModel> list = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_ALARMDATE + " IS NOT NULL");
+//                ((RecyclerAdapter) recyclerView.getAdapter()).setData(list);
+                if (filterTimeReminderIsPressed) {
+                    v.setBackgroundColor(Color.TRANSPARENT);
+                    filterTimeReminderIsPressed = false;
+                } else {
+                    v.setBackground(getResources().getDrawable(R.drawable.filter_icon_pressed));
+                    filterTimeReminderIsPressed = true;
+                }
+                getFilteredList(null);
             }
         });
 
-        filterTab.findViewById(R.id.location_reminder_notes).setOnClickListener(new View.OnClickListener() {
+        filterLocationReminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<ShoppingListModel> list = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_LOCATION + " IS NOT NULL");
-                ((RecyclerAdapter)recyclerView.getAdapter()).setData(list);
+//                ArrayList<ShoppingListModel> list = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_LOCATION + " IS NOT NULL");
+//                ((RecyclerAdapter)recyclerView.getAdapter()).setData(list);
+                if (filterLocationReminderIsPressed) {
+                    v.setBackgroundColor(Color.TRANSPARENT);
+                    filterLocationReminderIsPressed = false;
+                } else {
+                    v.setBackground(getResources().getDrawable(R.drawable.filter_icon_pressed));
+                    filterLocationReminderIsPressed = true;
+                }
+                getFilteredList(null);
+            }
+        });
+
+        filterColorNotes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (filterColorNotesIsPressed) {
+                    v.setBackgroundColor(Color.TRANSPARENT);
+                    filterColorNotesIsPressed = false;
+                    filterChosenColor = -1;
+                    getFilteredList(null);
+                } else {
+                    v.setBackground(getResources().getDrawable(R.drawable.filter_icon_pressed));
+                    filterColorNotesIsPressed = true;
+                    ListColorDialog colorDialog = new ListColorDialog();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("Color", filterChosenColor);
+                    colorDialog.setArguments(bundle);
+//                    colorDialog.setTargetFragment(this, COLOR_DIALOG_FRAGMENT);
+                    colorDialog.show(getSupportFragmentManager(), "ShoppingListColorDialog");
+                }
             }
         });
     }
@@ -235,5 +323,86 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFinishListColorDialog(int color) {
+        filterChosenColor = color;
+//        ArrayList<ShoppingListModel> list = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_LOCATION + " IS NOT NULL");
+//        ((RecyclerAdapter)recyclerView.getAdapter()).setData(list);
+        getFilteredList(null);
+    }
+
+    private void getFilteredList(String query){
+        String whereQuery = null;
+        if(filterTimeReminderIsPressed){
+            if(whereQuery != null)
+                whereQuery += " and " + DBHelper.SHOPPING_LIST_ALARMDATE + " IS NOT NULL";
+            else {
+                whereQuery = "";
+                whereQuery += DBHelper.SHOPPING_LIST_ALARMDATE + " IS NOT NULL";
+            }
+        }
+
+        if(filterLocationReminderIsPressed){
+            if(whereQuery != null)
+                whereQuery += " and " + DBHelper.SHOPPING_LIST_LOCATION + " IS NOT NULL";
+            else {
+                whereQuery = "";
+                whereQuery += DBHelper.SHOPPING_LIST_LOCATION + " IS NOT NULL";
+            }
+        }
+
+        if(filterColorNotesIsPressed){
+            if(whereQuery != null)
+                whereQuery += " and " + DBHelper.SHOPPING_LIST_COLOR + " = " + filterChosenColor;
+            else {
+                whereQuery = "";
+                whereQuery += DBHelper.SHOPPING_LIST_COLOR + " = " + filterChosenColor;
+            }
+        }
+
+        if(query != null && !query.isEmpty()){
+            if(whereQuery != null)
+                whereQuery += " and (" + DBHelper.SHOPPING_LIST_TITLE + " like '%" + query + "%' or " +
+                        DBHelper.SHOPPING_LIST_TAGS + " like '%" + query + "%')";
+            else {
+                whereQuery = "";
+                whereQuery += DBHelper.SHOPPING_LIST_TITLE + " like '%" + query + "%' or " +
+                        DBHelper.SHOPPING_LIST_TAGS + " like '%" + query + "%'";
+            }
+        }
+
+        ArrayList<ShoppingListModel> list = DBManager.getShoppingList(whereQuery);
+        ((RecyclerAdapter)recyclerView.getAdapter()).setData(list);
+    }
+
+    private void closeSearchTab(){
+        filterTimeReminderIsPressed = false;
+        filterTimeReminder.setBackgroundColor(Color.TRANSPARENT);
+
+        filterLocationReminderIsPressed = false;
+        filterLocationReminder.setBackgroundColor(Color.TRANSPARENT);
+
+        filterColorNotesIsPressed = false;
+        filterChosenColor = -1;
+        filterColorNotes.setBackgroundColor(Color.TRANSPARENT);
+
+        if(searchView.getQuery().toString().isEmpty())
+            getFilteredList(null);
+        else
+            searchView.setQuery("", false);
+    }
+
+    private void getRemindersList(){
+        String whereQuery = DBHelper.SHOPPING_LIST_ALARMDATE + " IS NOT NULL or " + DBHelper.SHOPPING_LIST_LOCATION + " IS NOT NULL";
+        ArrayList<ShoppingListModel> list = DBManager.getShoppingList(whereQuery);
+        ((RecyclerAdapter)recyclerView.getAdapter()).setData(list);
+    }
+
+    private void getTaggedNotes(String tag){
+        String whereQuery =  DBHelper.SHOPPING_LIST_TAGS + " like '%" + tag + "%'";
+        ArrayList<ShoppingListModel> list = DBManager.getShoppingList(whereQuery);
+        ((RecyclerAdapter)recyclerView.getAdapter()).setData(list);
     }
 }

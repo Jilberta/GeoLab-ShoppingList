@@ -26,6 +26,7 @@ import leavingstone.geolab.shoppinglist.activities.ShoppingListItemActivity;
 import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
+import leavingstone.geolab.shoppinglist.utils.GlobalConsts;
 
 /**
  * Created by Jay on 3/28/2015.
@@ -130,6 +131,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
         // Create an explicit content Intent that starts the main Activity.
         Intent notificationIntent = new Intent(getApplicationContext(), ShoppingListItemActivity.class);
         notificationIntent.putExtra(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingListId);
+        notificationIntent.putExtra(GlobalConsts.FROM_LOCATION_KEY, true);
         notificationIntent.setAction(getString(R.string.shopping_list_fragment));
         try {
             DBManager.init(this);
@@ -138,6 +140,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
         }
         ArrayList<ShoppingListModel> list = DBManager.getShoppingList(DBHelper.SHOPPING_LIST_ID + " = " + shoppingListId);
         ShoppingListModel shoppingList = list.get(0);
+
+        String notificationTitle = shoppingList.getTitle();
+        String notificationContent = getResources().getString(R.string.notification_text) + shoppingList.getLocationReminder().getAddress();
+
+        shoppingList.setLocationReminder(null);
+        DBManager.updateShoppingList(shoppingList);
 
         // Construct a task stack.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -155,14 +163,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
         // Get a notification builder that's compatible with platform versions >= 4
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
-        String notificationTitle = shoppingList.getTitle();
-        String notificationContent = "Reminder at: " + shoppingList.getLocationReminder().getAddress();
         // Define the notification settings.
         builder.setSmallIcon(R.drawable.pin_marker_icon)
                 // In a real app, you may want to use a library like Volley
                 // to decode the Bitmap.
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.drawable.pin_marker_icon))
+                        R.mipmap.shopping_list_icon))
                 .setColor(Color.RED)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationContent)
@@ -178,9 +184,6 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
         // Issue the notification
         mNotificationManager.notify((int) shoppingList.getId(), builder.build());
-
-        shoppingList.setLocationReminder(null);
-        DBManager.updateShoppingList(shoppingList);
 
     }
 

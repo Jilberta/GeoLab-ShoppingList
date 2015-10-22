@@ -16,6 +16,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
         android:orientation="vertical"
+        android:transitionName="targetImage"
         app:cardBackgroundColor="@android:color/white"
         app:cardElevation="10dp">
 
@@ -23,8 +24,8 @@
             android:id="@+id/card_view_ripple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:rv_type="rectangle"
-            app:rv_rippleDuration="140">
+            app:rv_rippleDuration="140"
+            app:rv_type="rectangle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,33 +57,42 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_weight="1.1"
+                        android:layout_weight="1.4"
                         android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/location_pin"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:src="@drawable/pin_marker_icon"
-                            android:visibility="invisible"
-                            android:layout_marginEnd="@dimen/reminder_left_image_margin"/>
+                            android:layout_gravity="center_vertical|end"
+                            android:layout_marginEnd="@dimen/reminder_left_image_margin"
+                            android:src="@drawable/filter_location_icon"
+                            android:visibility="gone" />
 
-                        <ImageView
+                        <LinearLayout
+                            android:id="@+id/reminder_block"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:src="@drawable/alarm_icon" />
+                            android:orientation="horizontal"
+                            android:layout_gravity="center_vertical|end"
+                            android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/reminder"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="@dimen/reminder_left_image_margin"
-                            android:text="@string/date_reminder_text"
-                            android:textColor="@color/text_color"
-                            android:textSize="@dimen/reminder_text_size" />
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|end"
+                                android:src="@drawable/filter_time_icon" />
+
+                            <TextView
+                                android:id="@+id/reminder"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|end"
+                                android:layout_marginStart="@dimen/reminder_left_image_margin"
+                                android:text="@string/date_reminder_text"
+                                android:textColor="@color/text_color"
+                                android:textSize="@dimen/reminder_text_size" />
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -121,13 +131,13 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/progress_bar_margin"
-                        android:layout_weight="1.4"
+                        android:layout_weight="1.8"
                         android:gravity="center"
-                        android:text="Progress"
+                        android:text="@string/progress_label"
                         android:textColor="@color/text_color"
                         android:textSize="@dimen/progress_label_text_size" />
 
-                        <!--style="?android:attr/progressBarStyleHorizontal"-->
+                    <!--style="?android:attr/progressBarStyleHorizontal"-->
                     <ProgressBar
                         android:id="@+id/progressBar"
                         style="@style/CustomProgressBarStyle"
@@ -139,7 +149,7 @@
                         android:layout_weight="6"
                         android:max="10"
                         android:progress="4"
-                        android:progressDrawable="@drawable/progress_drawable"/>
+                        android:progressDrawable="@drawable/progress_drawable" />
 
                     <TextView
                         android:id="@+id/progress_percentage_label"

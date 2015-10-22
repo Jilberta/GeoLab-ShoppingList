@@ -24,17 +24,19 @@
     <dimen name="item_view_start_padding">10dp</dimen>
     <dimen name="progress_label_text_size">10sp</dimen>
     <dimen name="progress_bar_margin">5dp</dimen>
-    <dimen name="progress_bar_margin_bottom">3dp</dimen>
+    <dimen name="progress_bar_margin_bottom">1dp</dimen>
 
 
     <!-- ShoppingList Item Activity -->
-    <dimen name="fab_mini_margin">30dp</dimen>
+    <dimen name="fab_mini_margin">40dp</dimen>
     <dimen name="title_top_margin">10dp</dimen>
     <dimen name="title_text_size_shopping_list_activity">24sp</dimen>
     <dimen name="location_pin_text_size">18sp</dimen>
     <dimen name="list_items_container_marign">10dp</dimen>
     <dimen name="progress_bar_label_text_size">10sp</dimen>
     <dimen name="list_item_checkbox_side_margin">10dp</dimen>
+    <dimen name="remind_me_text_size">14sp</dimen>
+    <dimen name="reminders_top_margin">6dp</dimen>
 
 
     <!-- TagsActivity -->

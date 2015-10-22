@@ -20,10 +20,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
-import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import leavingstone.geolab.shoppinglist.R;
 import leavingstone.geolab.shoppinglist.adapters.MainFragmentListAdapter;
@@ -93,30 +89,30 @@ public class MainFragment extends Fragment {
     }
 
 
-    private DynamicListView list;
+//    private DynamicListView list;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.main_fragment_layout, container, false);
 
-        list = (DynamicListView) rootView.findViewById(android.R.id.list);
-        MainFragmentListAdapter adapter = new MainFragmentListAdapter(getActivity(), DBManager.getShoppingList(null));
-        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
-        animationAdapter.setAbsListView(list);
-        list.setAdapter(animationAdapter);
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
-//                Bundle extras = new Bundle();
-//                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, ((ShoppingListModel) parent.getAdapter().getItem(position)).getId());
-//                shoppingListFragment.setArguments(extras);
-//                FragmentTransaction ft = getFragmentManager().beginTransaction()
-//                        .replace(R.id.container, shoppingListFragment)
-//                        .addToBackStack("transaction");
-//                ft.commit();
-            }
-        });
+//        list = (DynamicListView) rootView.findViewById(android.R.id.list);
+//        MainFragmentListAdapter adapter = new MainFragmentListAdapter(getActivity(), DBManager.getShoppingList(null));
+//        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
+//        animationAdapter.setAbsListView(list);
+//        list.setAdapter(animationAdapter);
+//
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+////                ShoppingListFragment shoppingListFragment = ShoppingListFragment.newInstance();
+////                Bundle extras = new Bundle();
+////                extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, ((ShoppingListModel) parent.getAdapter().getItem(position)).getId());
+////                shoppingListFragment.setArguments(extras);
+////                FragmentTransaction ft = getFragmentManager().beginTransaction()
+////                        .replace(R.id.container, shoppingListFragment)
+////                        .addToBackStack("transaction");
+////                ft.commit();
+//            }
+//        });
 
         Button newList = (Button) rootView.findViewById(R.id.newList);
         newList.setOnClickListener(new View.OnClickListener() {

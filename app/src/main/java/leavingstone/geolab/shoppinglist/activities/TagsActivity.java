@@ -93,4 +93,15 @@ public class TagsActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent backtoHome = new Intent(this, ShoppingListItemActivity.class);
+        backtoHome.addCategory(Intent.CATEGORY_HOME);
+        backtoHome.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle extras = new Bundle();
+        extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, shoppingList.getId());
+        backtoHome.putExtras(extras);
+        startActivity(backtoHome);
+    }
 }

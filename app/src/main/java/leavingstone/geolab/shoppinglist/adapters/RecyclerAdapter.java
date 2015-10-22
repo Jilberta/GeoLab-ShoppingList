@@ -3,13 +3,7 @@ package leavingstone.geolab.shoppinglist.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.AvoidXfermode;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.UiThread;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,6 +28,7 @@ import leavingstone.geolab.shoppinglist.database.DBHelper;
 import leavingstone.geolab.shoppinglist.database.DBManager;
 import leavingstone.geolab.shoppinglist.model.ListItemModel;
 import leavingstone.geolab.shoppinglist.model.ShoppingListModel;
+import leavingstone.geolab.shoppinglist.utils.AnimationUtils;
 
 /**
  * Created by Jay on 8/23/2015.
@@ -43,6 +38,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
     private Context context;
     private ArrayList<ShoppingListModel> shoppingList, filteredShoppingList;
     private ListFilter listFilter;
+    private int previousPosition = 0;
 
     public RecyclerAdapter(Context context, ArrayList<ShoppingListModel> shoppingList) {
         this.context = context;
@@ -68,19 +64,27 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
     }
 
     @Override
-    public void onBindViewHolder(ShoppingListHolder shoppingListHolder, int position) {
+    public void onBindViewHolder(final ShoppingListHolder shoppingListHolder, int position) {
         final ShoppingListModel list = this.filteredShoppingList.get(position);
         shoppingListHolder.titleView.setText(list.getTitle());
 
-        if(list.getAlarmDate() == null || list.getAlarmDate().isEmpty())
-            shoppingListHolder.reminderView.setText("--/--/--");
-        else
+//        if(list.getAlarmDate() == null || list.getAlarmDate().isEmpty())
+//            shoppingListHolder.reminderView.setText("--/--/--");
+//        else
+//            shoppingListHolder.reminderView.setText(list.getAlarmDate());
+        if(list.getAlarmDate() != null){
+            shoppingListHolder.timeReminderBlock.setVisibility(View.VISIBLE);
             shoppingListHolder.reminderView.setText(list.getAlarmDate());
+        }
+
+        if(list.getLocationReminder() != null)
+            shoppingListHolder.locationPin.setVisibility(View.VISIBLE);
 
         ArrayList<ListItemModel> listItems = DBManager.getShoppingListItems(DBHelper.SHOPPING_LIST_ITEM_PARENT_ID + " = " + list.getId());
         double maxItems = listItems.size();
         double checkedCount = 0;
         shoppingListHolder.itemContainer.removeAllViews();
+        shoppingListHolder.itemContainer.setBackgroundColor(list.getColor());
         for (int i = 0; i < listItems.size(); i++) {
             ListItemModel item = listItems.get(i);
             ShoppingListItemView listItem = new ShoppingListItemView(context, item, i + 1, list.getColor());
@@ -106,21 +110,34 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
                 Bundle extras = new Bundle();
                 extras.putLong(ShoppingListModel.SHOPPING_LIST_MODEL_KEY, list.getId());
                 shoppingList.putExtras(extras);
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    context.startActivity(shoppingList, ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context).toBundle());
-                }else{
-                    context.startActivity(shoppingList);
-                }
+//                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    context.startActivity(shoppingList, ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context).toBundle());
+////                    ActivityOptionsCompat anim = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity)context, shoppingListHolder.testView, "targetImage");
+////                    context.startActivity(shoppingList, anim.toBundle());
+//                }else{
+//                    context.startActivity(shoppingList);
+//                }
+                context.startActivity(shoppingList);
+                ((Activity) context).overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
             }
         });
+
+        if(position > previousPosition){
+            new AnimationUtils().animate(shoppingListHolder, true);
+        } else {
+            new AnimationUtils().animate(shoppingListHolder, false);
+        }
+        previousPosition = position;
     }
 
     class ShoppingListHolder extends RecyclerView.ViewHolder {
         CardView cardView;
+        CardView testView;
         RippleView rippleView;
         TextView titleView;
         TextView reminderView;
         ImageView locationPin;
+        LinearLayout timeReminderBlock;
         LinearLayout itemContainer;
         TextView progressPercentageView;
         ProgressBar progressBar;
@@ -132,9 +149,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Shoppi
             titleView = (TextView) itemView.findViewById(R.id.title);
             reminderView = (TextView) itemView.findViewById(R.id.reminder);
             locationPin = (ImageView) itemView.findViewById(R.id.location_pin);
+            timeReminderBlock = (LinearLayout) itemView.findViewById(R.id.reminder_block);
             itemContainer = (LinearLayout) itemView.findViewById(R.id.item_container);
             progressPercentageView = (TextView) itemView.findViewById(R.id.progress_percentage_label);
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+
+            testView = (CardView) itemView.findViewById(R.id.card_view2);
         }
     }
 

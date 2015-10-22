@@ -6,16 +6,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -47,6 +42,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.sleepbot.datetimepicker.time.RadialPickerLayout;
 import com.sleepbot.datetimepicker.time.TimePickerDialog;
+import com.wefika.flowlayout.FlowLayout;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,7 +51,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import leavingstone.geolab.shoppinglist.MainActivity;
 import leavingstone.geolab.shoppinglist.R;
 import leavingstone.geolab.shoppinglist.async.ListItemsUpdater;
 import leavingstone.geolab.shoppinglist.custom_views.CheckBoxView;
@@ -85,7 +80,8 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
 
     private ShoppingListModel shoppingList;
     private ArrayList<ListItemModel> listItems;
-    private LinearLayout orderContainer, uncheckedContainer, checkedContainer, tagsContainer;
+    private LinearLayout orderContainer, uncheckedContainer, checkedContainer; //tagsContainer;
+    private FlowLayout tagsContainer;
     private EditText titleView;
     private RelativeLayout locationPin, reminderPin;
 
@@ -200,7 +196,8 @@ public class ShoppingListFragment extends Fragment implements GoogleApiClient.Co
         View rootView = inflater.inflate(R.layout.shopping_list_fragment, container, false);
         changeFragmentColor(rootView, shoppingList.getColor());
 
-        tagsContainer = (LinearLayout) rootView.findViewById(R.id.tags);
+//        tagsContainer = (LinearLayout) rootView.findViewById(R.id.tags);
+        tagsContainer = (FlowLayout) rootView.findViewById(R.id.tags);
         uncheckedContainer = (LinearLayout) rootView.findViewById(R.id.unchecked_container);
         checkedContainer = (LinearLayout) rootView.findViewById(R.id.checked_container);
 
