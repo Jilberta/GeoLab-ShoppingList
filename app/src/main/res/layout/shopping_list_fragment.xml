@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="leavingstone.geolab.shoppinglist.fragments.MainFragment">
+    tools:context="ge.geolab.bucket.fragments.MainFragment">
 
     <!-- The ActionBar -->
     <include

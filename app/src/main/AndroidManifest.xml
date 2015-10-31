@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="leavingstone.geolab.shoppinglist" >
+    package="ge.geolab.bucket" >
 
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -21,30 +21,30 @@
             android:value="AIzaSyAxgoG44Lh0e0eTaj2A3KYdDWPiBaqljLA" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="ge.geolab.bucket.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".activities.ShoppingListItemActivity"
+            android:name="ge.geolab.bucket.activities.ShoppingListItemActivity"
             android:label="Shopping List"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="ge.geolab.bucket.MainActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="ge.geolab.bucket.MainActivity" />
         </activity>
 
-        <service android:name=".locations.GeofenceTransitionsIntentService" />
+        <service android:name="ge.geolab.bucket.locations.GeofenceTransitionsIntentService" />
 
-        <receiver android:name=".receivers.AlarmReceiver" />
+        <receiver android:name="ge.geolab.bucket.receivers.AlarmReceiver" />
 
         <activity
-            android:name=".activities.TagsActivity"
+            android:name="ge.geolab.bucket.activities.TagsActivity"
             android:label="@string/title_activity_tags"
             android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activities.SplashActivity" >
+        <activity android:name="ge.geolab.bucket.activities.SplashActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

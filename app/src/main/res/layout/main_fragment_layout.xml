@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="leavingstone.geolab.shoppinglist.fragments.MainFragment">
+    tools:context="ge.geolab.bucket.fragments.MainFragment">
 
     <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
         android:id="@android:id/list"
